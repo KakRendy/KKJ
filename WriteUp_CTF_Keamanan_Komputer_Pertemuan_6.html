@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3f1eb">
+<title>CTF Field Notes — Keamanan Komputer & Jaringan | Pertemuan 6</title>
+<style>
+:root{
+ --bg:#f2f0e9;--paper:rgba(255,255,255,.82);--paper-solid:#fff;--ink:#17211f;--muted:#68736f;
+ --line:rgba(23,33,31,.13);--accent:#d84a3a;--accent2:#1d7167;--soft:#e8eee9;--soft2:#f8e9e4;
+ --gold:#a97824;--shadow:0 16px 42px rgba(26,38,34,.08);--radius:18px;--code:#17211f;--codeink:#edf4f0;
+ --serif:Georgia,"Times New Roman",serif;--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.62;transition:background .35s,color .35s}
+a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+button,select,input{font:inherit}
+button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:var(--paper);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1500px;margin:auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:-.04em}
+.brand-mark{width:37px;height:37px;border-radius:11px;background:var(--ink);color:white;display:grid;place-items:center;font-size:12px;letter-spacing:-.06em}
+.brand small{display:block;font-size:10px;letter-spacing:.14em;color:var(--muted);font-weight:700}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+select,.tool-btn,.searchbox{border:1px solid var(--line);border-radius:11px;padding:9px 12px;background:var(--paper-solid);color:var(--ink);font-size:12px}
+.tool-btn{font-weight:750}.tool-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.layout{max-width:1500px;margin:0 auto;padding:26px 24px 80px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px}
+.sidebar{position:sticky;top:82px;align-self:start;max-height:calc(100vh - 100px);overflow:auto;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);backdrop-filter:blur(18px)}
+.side-title{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);font-weight:850;margin:3px 8px 10px}
+.sidebar a{display:block;padding:8px 10px;border-radius:9px;color:var(--ink);font-size:12px;font-weight:650}
+.sidebar a:hover{background:var(--soft);text-decoration:none}
+.sidebar .sub{padding-left:23px;font-size:11px;color:var(--muted);font-weight:550}
+.main{min-width:0}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:28px;padding:34px;background:var(--paper);box-shadow:var(--shadow);backdrop-filter:blur(20px)}
+.hero:after{content:"";position:absolute;width:360px;height:360px;border-radius:50%;right:-100px;top:-190px;background:radial-gradient(circle,rgba(216,74,58,.18),transparent 68%);pointer-events:none}
+.kicker{font-size:10px;text-transform:uppercase;letter-spacing:.19em;color:var(--accent);font-weight:900}
+h1{font-size:clamp(34px,5vw,64px);letter-spacing:-.065em;line-height:.98;margin:13px 0 15px;max-width:850px}
+.hero p{max-width:800px;color:var(--muted);font-size:15px}
+.hero-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}
+.pill{font-size:11px;font-weight:800;padding:7px 11px;border-radius:99px;background:var(--soft);border:1px solid var(--line)}
+.pill.red{background:var(--soft2);color:var(--accent);border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}
+.stat{padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--paper-solid)}
+.stat strong{display:block;font-size:23px;letter-spacing:-.05em}.stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+.progress-wrap{margin-top:17px}.progress-line{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}.progress-line span{height:100%;display:block;width:0;background:var(--accent2);transition:width .3s}.progress-caption{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:42px 0 17px}
+.section-head h2{font-size:27px;letter-spacing:-.05em;margin:0}.section-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
+.searchbox{min-width:220px;flex:1}
+.filter-btn{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:8px 12px;font-size:11px;font-weight:800}
+.filter-btn.active{background:var(--ink);color:white;border-color:var(--ink)}
+.chapter-band{margin:38px 0 16px;padding:14px 17px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 13px 13px 0}
+.chapter-band .eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:900;color:var(--accent)}
+.chapter-band h3{font-size:20px;letter-spacing:-.04em;margin:3px 0}.chapter-band p{font-size:12px;color:var(--muted);margin:0}
+.challenge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.challenge-card{min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 7px 24px rgba(20,35,31,.045);overflow:hidden;transition:transform .25s,box-shadow .25s}
+.challenge-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-top{padding:19px 19px 12px}
+.card-labels{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.category{font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--accent2)}
+.level{font-size:9px;font-weight:850;padding:4px 8px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.challenge-card h3{font-size:20px;letter-spacing:-.045em;line-height:1.15;margin:13px 0 7px}
+.card-desc{font-size:12px;color:var(--muted);margin:0}
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.card-tags span{font-size:9px;padding:4px 7px;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-weight:700}
+.card-actions{display:flex;align-items:center;gap:8px;padding:0 19px 15px}
+.card-actions a,.card-actions button{font-size:11px;font-weight:800}
+.link-btn{padding:7px 10px;border-radius:9px;background:var(--ink);color:white}
+.link-btn:hover{color:white;text-decoration:none;opacity:.86}
+.walkthrough,.answer,.extra{border-top:1px solid var(--line)}
+.walkthrough>summary,.answer>summary,.extra>summary{cursor:pointer;list-style:none;padding:12px 19px;font-size:11px;font-weight:850;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.walkthrough>summary::-webkit-details-marker,.answer>summary::-webkit-details-marker,.extra>summary::-webkit-details-marker{display:none}
+.walkthrough>summary:after,.answer>summary:after,.extra>summary:after{content:"＋";font-size:17px;color:var(--accent)}
+.walkthrough[open]>summary:after,.answer[open]>summary:after,.extra[open]>summary:after{content:"−"}
+.inside{padding:0 19px 18px;font-size:12px}
+.inside h4{font-size:12px;margin:17px 0 6px;letter-spacing:-.01em}
+.inside p{margin:7px 0}.inside ol,.inside ul{padding-left:19px}.inside li{margin:5px 0}
+.answer{background:var(--soft2)}
+.answer>summary{color:var(--accent)}
+.answer .inside{padding-top:2px}
+.answer-value{display:block;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code);color:var(--codeink);border-radius:10px;padding:12px 13px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;margin:8px 0}
+.copy-btn{border:1px solid var(--line);background:var(--paper-solid);border-radius:8px;padding:7px 10px;font-size:10px;font-weight:850;color:var(--ink)}
+.note{padding:11px 13px;border-radius:10px;background:var(--soft);border-left:3px solid var(--accent2);margin:12px 0}
+.warning{background:var(--soft2);border-left-color:var(--accent)}
+.diagram{margin:13px 0;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--paper-solid);overflow:hidden}
+.diagram svg{width:100%;height:auto;display:block;max-height:240px}
+.diagram figcaption{font-size:10px;color:var(--muted);margin-top:7px}
+table{border-collapse:collapse;width:100%;font-size:11px;margin:12px 0}
+th,td{padding:8px 9px;border:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:850}
+code,.inline-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--soft);padding:2px 5px;border-radius:5px;font-size:.95em;overflow-wrap:anywhere}
+.codeblock{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code);color:var(--codeink);border-radius:11px;padding:12px;font:11px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:auto}
+.complete{display:flex;align-items:center;gap:8px;padding:12px 19px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);font-weight:750}
+.complete input{accent-color:var(--accent2);width:15px;height:15px}
+.source-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.source{border:1px solid var(--line);border-radius:12px;padding:13px;background:var(--paper)}
+.source strong{font-size:12px}.source p{font-size:10px;color:var(--muted);margin:5px 0}.source a{font-size:10px;font-weight:800}
+.footer{margin-top:48px;padding:22px 0;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+.empty{display:none;padding:28px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--muted);font-size:13px}
+.disclaimer{padding:14px 16px;border:1px solid rgba(169,120,36,.3);border-radius:13px;background:rgba(169,120,36,.07);font-size:11px;color:var(--muted);margin-top:20px}
+.hidden-card{display:none!important}
+@media(max-width:1050px){.layout{grid-template-columns:205px minmax(0,1fr);gap:17px}.challenge-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.layout{display:block;padding:14px}.sidebar{position:relative;top:auto;max-height:none;margin-bottom:14px}.sidebar nav{display:grid;grid-template-columns:repeat(2,1fr)}.topbar-inner{padding:10px 13px;align-items:flex-start}.brand{font-size:13px}.toolbar{justify-content:flex-end}.toolbar select{max-width:180px}.hero{padding:24px 20px}.stats{grid-template-columns:repeat(2,1fr)}.section-head{display:block}.source-list{grid-template-columns:1fr}}
+/* 1. Swiss Minimalism + Motion */
+body[data-theme="swiss"]{--bg:#f7f7f4;--paper:rgba(255,255,255,.9);--paper-solid:#fff;--ink:#111;--muted:#666;--accent:#e53935;--accent2:#111;--soft:#f0f0ed;--soft2:#fff0ef;--line:rgba(0,0,0,.16);--radius:4px;--shadow:0 14px 30px rgba(0,0,0,.06)}
+body[data-theme="swiss"] .hero{border-radius:4px;border-top:6px solid var(--accent)}
+body[data-theme="swiss"] .challenge-card{border-radius:4px}
+body[data-theme="swiss"] .challenge-card:hover{transform:translateY(-5px)}
+body[data-theme="swiss"] .brand-mark{border-radius:2px;background:var(--accent)}
+/* 2. Dark Glassmorphism + Aurora */
+body[data-theme="aurora"]{--bg:#080d19;--paper:rgba(20,29,49,.68);--paper-solid:#151f34;--ink:#edf3ff;--muted:#9eacc7;--accent:#ff79b0;--accent2:#72e6d0;--soft:rgba(111,139,193,.15);--soft2:rgba(255,121,176,.13);--line:rgba(185,204,255,.18);--code:#030813;--codeink:#e8f4ff;--shadow:0 20px 65px rgba(0,0,0,.35)}
+body[data-theme="aurora"] .hero{background:radial-gradient(ellipse at 10% 0%,rgba(103,80,255,.22),transparent 45%),radial-gradient(ellipse at 90% 30%,rgba(0,225,190,.16),transparent 45%),var(--paper);border-color:rgba(160,190,255,.22)}
+body[data-theme="aurora"] .challenge-card{backdrop-filter:blur(20px)}
+body[data-theme="aurora"] .brand-mark{background:linear-gradient(135deg,#865cff,#15cbb3)}
+body[data-theme="aurora"] .tool-btn.primary,body[data-theme="aurora"] .link-btn,body[data-theme="aurora"] .filter-btn.active{background:linear-gradient(120deg,#705bff,#168e9a);border:0}
+body[data-theme="aurora"] .diagram{background:rgba(7,13,25,.7)}
+/* 3. Editorial + Asymmetric Grid */
+body[data-theme="editorial"]{--bg:#eee9df;--paper:#faf7f0;--paper-solid:#fffdf8;--ink:#26231f;--muted:#777064;--accent:#a13a2e;--accent2:#285a54;--soft:#e7e0d4;--soft2:#f3e0da;--line:rgba(38,35,31,.19);--radius:2px;--shadow:0 13px 30px rgba(52,42,30,.08)}
+body[data-theme="editorial"]{font-family:var(--serif)}
+body[data-theme="editorial"] h1,body[data-theme="editorial"] h2,body[data-theme="editorial"] h3{font-family:var(--serif);font-weight:600;letter-spacing:-.04em}
+body[data-theme="editorial"] .layout{grid-template-columns:220px minmax(0,1fr)}
+body[data-theme="editorial"] .challenge-grid{grid-template-columns:1.2fr .8fr}
+body[data-theme="editorial"] .challenge-card:nth-child(3n+1){grid-row:span 2}
+body[data-theme="editorial"] .hero{border-radius:2px;border-top:1px solid var(--ink)}
+body[data-theme="editorial"] .brand-mark{border-radius:2px}
+body[data-theme="editorial"] .chapter-band{border-radius:0;border-left:2px solid var(--accent)}
+/* 4. Claymorphism + 3D */
+body[data-theme="clay"]{--bg:#e9e6f4;--paper:#f5f2ff;--paper-solid:#fff;--ink:#302b45;--muted:#77728c;--accent:#ed6d70;--accent2:#5a66b8;--soft:#e8e4f7;--soft2:#ffe9e9;--line:rgba(73,66,115,.12);--radius:25px;--shadow:9px 9px 20px rgba(96,87,143,.13),-8px -8px 18px rgba(255,255,255,.9)}
+body[data-theme="clay"] .hero,body[data-theme="clay"] .challenge-card,body[data-theme="clay"] .sidebar{border:0;box-shadow:var(--shadow)}
+body[data-theme="clay"] .challenge-card{border-radius:24px}
+body[data-theme="clay"] .hero{border-radius:32px}
+body[data-theme="clay"] .brand-mark{border-radius:13px;background:linear-gradient(145deg,#ed858b,#c64f70);box-shadow:5px 5px 10px rgba(90,60,100,.18),-4px -4px 9px rgba(255,255,255,.7)}
+body[data-theme="clay"] .tool-btn,body[data-theme="clay"] select,.searchbox{border:0;box-shadow:inset 3px 3px 7px rgba(95,85,145,.12),inset -3px -3px 7px rgba(255,255,255,.9)}
+body[data-theme="clay"] .link-btn{border-radius:99px;background:linear-gradient(145deg,#646fc2,#4852a2);box-shadow:4px 4px 8px rgba(64,69,135,.2)}
+body[data-theme="clay"] .challenge-card:hover{transform:translateY(-5px) rotateX(1deg)}
+body[data-theme="clay"] .chapter-band{border-radius:18px;border:0;box-shadow:var(--shadow)}
+/* Default theme: Swiss + Glassmorphism */
+body[data-theme="default"]{--bg:#f2f0e9;--paper:rgba(255,255,255,.78);--paper-solid:#fff;--ink:#17211f;--muted:#68736f;--accent:#d84a3a;--accent2:#1d7167;--soft:#e8eee9;--soft2:#f8e9e4;--line:rgba(23,33,31,.13);--radius:18px;--shadow:0 16px 42px rgba(26,38,34,.08)}
+body[data-theme="default"] .hero,body[data-theme="default"] .sidebar{backdrop-filter:blur(20px)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-theme="default">
+<header class="topbar">
+ <div class="topbar-inner">
+  <div class="brand"><div class="brand-mark">KJ/06</div><div>CTF FIELD NOTES<small>KEAMANAN KOMPUTER & JARINGAN</small></div></div>
+  <div class="toolbar">
+   <select id="themeSelect" aria-label="Pilih tema">
+    <option value="default">Default · Swiss + Glassmorphism</option>
+    <option value="swiss">1 · Swiss Minimalism + Motion</option>
+    <option value="aurora">2 · Dark Glassmorphism + Aurora</option>
+    <option value="editorial">3 · Editorial + Asymmetric Grid</option>
+    <option value="clay">4 · Claymorphism + 3D</option>
+   </select>
+   <button class="tool-btn" id="expandAll">Buka semua</button>
+   <button class="tool-btn" id="collapseAll">Tutup semua</button>
+   <button class="tool-btn primary" id="showKeys">Mode dosen: kunci</button>
+  </div>
+ </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+ <div class="side-title">Navigasi write-up</div>
+ <nav>
+  <a href="#overview">Ringkasan</a>
+  <a href="#cara-baca">Cara menggunakan</a>
+  <a href="#bab1">BAB I · Fundamental</a>
+  <a class="sub" href="#finding-flags">Finding Flags</a>
+  <a class="sub" href="#ascii">ASCII</a>
+  <a class="sub" href="#hex">Hex</a>
+  <a class="sub" href="#base64">Base64</a>
+  <a class="sub" href="#xor">XOR Starter</a>
+  <a href="#bab2">BAB II · Algorithms</a>
+  <a class="sub" href="#modexp">Modular Exponentiation</a>
+  <a class="sub" href="#publickeys">Public Keys</a>
+  <a class="sub" href="#privatekeys">Private Keys</a>
+  <a class="sub" href="#rsadec">RSA Decryption</a>
+  <a href="#bab5">BAB V–VI · PKI/TLS</a>
+  <a class="sub" href="#secureprotocols">Secure Protocols</a>
+  <a href="#bab7">BAB VII · Data in Transit</a>
+  <a class="sub" href="#sharks">Sharks on the Wire</a>
+  <a class="sub" href="#thm">Network Traffic Basics</a>
+  <a href="#bab8">BAB VIII · Best Practices</a>
+  <a class="sub" href="#ssllabs">SSL Labs Mini Audit</a>
+  <a href="#sources">Sumber & referensi</a>
+ </nav>
+ <div class="note" style="margin-top:16px"><strong>Catatan dosen</strong><br>Jawaban disembunyikan secara default. Gunakan tombol “Mode dosen: kunci” untuk membuka seluruh kunci.</div>
+</aside>
+
+<main class="main">
+<section class="hero" id="overview">
+ <div class="kicker">Pertemuan 06 / Cryptography & Secure Communication</div>
+ <h1>CTF Write-up<br><span style="color:var(--accent)">Answer. Decode. Understand.</span></h1>
+ <p>Dokumen pendamping handout perkuliahan yang berisi penyelesaian tantangan, flag atau kunci jawaban, langkah analisis, pembahasan konsep, serta diagram pendukung. Ditujukan sebagai pegangan dosen dan bahan pembahasan setelah mahasiswa mencoba tantangan secara mandiri.</p>
+ <div class="hero-meta"><span class="pill red">Instructor reference</span><span class="pill">Beginner-focused</span><span class="pill">Offline-ready</span><span class="pill">HTML interaktif</span></div>
+ <div class="stats">
+  <div class="stat"><strong>12</strong><span>CTF / challenge</span></div>
+  <div class="stat"><strong>5</strong><span>tema tampilan</span></div>
+  <div class="stat"><strong>8</strong><span>bab materi terhubung</span></div>
+  <div class="stat"><strong>1</strong><span>mini audit TLS</span></div>
+ </div>
+ <div class="progress-wrap"><div class="progress-caption"><span>Progres pembahasan write-up</span><strong id="progressText">0 / 11 selesai</strong></div><div class="progress-line"><span id="progressBar"></span></div></div>
+</section>
+
+<section id="cara-baca">
+ <div class="section-head"><div><h2>Cara menggunakan dokumen</h2><p>Alur yang disarankan ketika membahas hasil CTF bersama mahasiswa.</p></div></div>
+ <div class="challenge-grid">
+  <div class="challenge-card"><div class="card-top"><div class="category">01 · Student attempt</div><h3>Kerjakan tantangan terlebih dahulu</h3><p class="card-desc">Mahasiswa membuka platform CTF, membaca soal, mengerjakan tantangan, lalu mencatat jawaban dan prosesnya.</p></div></div>
+  <div class="challenge-card"><div class="card-top"><div class="category">02 · Reveal solution</div><h3>Buka tutorial dan pembahasan</h3><p class="card-desc">Klik panel “Langkah penyelesaian” untuk membaca metode penyelesaian. Kunci jawaban dapat dibuka terpisah.</p></div></div>
+  <div class="challenge-card"><div class="card-top"><div class="category">03 · Verify concept</div><h3>Hubungkan dengan konsep</h3><p class="card-desc">Setiap write-up ditutup dengan pembahasan: konsep kriptografi apa yang diuji dan apa makna hasilnya.</p></div></div>
+  <div class="challenge-card"><div class="card-top"><div class="category">04 · Progress</div><h3>Tandai pembahasan selesai</h3><p class="card-desc">Gunakan checkbox di setiap kartu untuk mencatat tantangan yang sudah dibahas. Progres tersimpan pada browser yang digunakan.</p></div></div>
+ </div>
+ <div class="disclaimer"><strong>Penggunaan akademik:</strong> kunci jawaban disediakan untuk keperluan pengajaran dan pembahasan setelah percobaan. Untuk pelaksanaan CTF, dosen dapat membagikan halaman ini tanpa membuka bagian kunci, atau menggunakan versi mahasiswa yang hanya memuat tautan dan instruksi.</div>
+</section>
+
+<div class="section-head">
+ <div><h2>Challenge library</h2><p>Telusuri berdasarkan bab, platform, atau nama tantangan.</p></div>
+</div>
+<div class="controls">
+ <input class="searchbox" id="searchInput" type="search" placeholder="Cari challenge, flag, konsep, atau kata kunci…">
+ <button class="filter-btn active" data-filter="all">Semua</button>
+ <button class="filter-btn" data-filter="cryptohack">CryptoHack</button>
+ <button class="filter-btn" data-filter="tryhackme">TryHackMe</button>
+ <button class="filter-btn" data-filter="audit">Mini audit</button>
+</div>
+<div class="empty" id="emptyState">Tidak ada tantangan yang cocok dengan pencarian.</div>
+
+<div class="chapter-band" id="bab1"><div class="eyebrow">BAB I</div><h3>Fundamental Concepts of Cryptography</h3><p>Encoding, representasi data, flag, dan operasi XOR. Seluruh tantangan di bagian ini berada pada jalur pemula CryptoHack.</p></div>
+<div class="challenge-grid" id="grid-bab1">
+
+<article class="challenge-card" id="finding-flags" data-category="cryptohack" data-chapter="1" data-search="finding flags introduction format crypto flag beginner">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · Introduction</span><span class="level">Beginner · 2 pts</span></div><h3>01. Finding Flags</h3><p class="card-desc">Tantangan pengenalan untuk memahami format flag dan mekanisme submit jawaban pada CTF.</p><div class="card-tags"><span>Flag format</span><span>CTF basics</span><span>Introduction</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/courses/intro/fflags/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Inti soal.</strong> CryptoHack menjelaskan bahwa setiap tantangan memiliki flag sebagai bukti bahwa peserta menemukan jawaban yang benar. Flag umumnya menggunakan format <code>crypto{...}</code>.</p>
+  <ol><li>Buka halaman Finding Flags.</li><li>Baca instruksi dan perhatikan contoh format flag yang diberikan.</li><li>Salin contoh flag yang ditampilkan pada soal.</li><li>Masukkan ke kolom submit, kemudian kirim untuk menandai tantangan selesai.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 135" role="img" aria-label="Struktur flag CryptoHack"><rect x="15" y="28" width="610" height="78" rx="13" fill="#e8eee9" stroke="#1d7167"/><text x="45" y="73" font-size="24" font-family="monospace" fill="#17211f">crypto{</text><rect x="165" y="43" width="300" height="48" rx="8" fill="#f8e9e4" stroke="#d84a3a"/><text x="315" y="73" text-anchor="middle" font-size="19" font-family="monospace" fill="#a33228">isi_flag</text><text x="480" y="73" font-size="24" font-family="monospace" fill="#17211f">}</text></svg><figcaption>Ilustrasi struktur flag yang umum digunakan CryptoHack.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> Flag bukan password atau secret key. Flag merupakan string jawaban yang disediakan atau diperoleh dari hasil analisis. Format khusus membantu peserta mengenali keluaran yang benar.</p>
+ </div></details>
+ <details class="answer"><summary>Reveal flag / kunci jawaban</summary><div class="inside"><code class="answer-value">crypto{y0ur_f1rst_fl4g}</code><button class="copy-btn" data-copy="crypto{y0ur_f1rst_fl4g}">Salin jawaban</button><p class="note">Ini adalah flag contoh yang ditampilkan langsung oleh tantangan Finding Flags.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="finding-flags"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="ascii" data-category="cryptohack" data-chapter="1" data-search="ascii encoding integer decimal character flag">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · General / Encoding</span><span class="level">Beginner · 5 pts</span></div><h3>02. ASCII</h3><p class="card-desc">Mengubah kumpulan bilangan desimal menjadi karakter ASCII untuk memperoleh flag.</p><div class="card-tags"><span>ASCII</span><span>Decimal → Text</span><span>Encoding</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/general/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Data soal:</strong></p><div class="codeblock">[99, 114, 121, 112, 116, 111, 123, 65, 83, 67, 73, 73, 95, 112, 114, 49, 110, 116, 52, 98, 108, 51, 125]</div>
+  <ol><li>Perhatikan bahwa angka-angka berada pada rentang kode karakter ASCII.</li><li>Setiap angka mewakili satu karakter. Contoh: 99 = <code>c</code>, 114 = <code>r</code>, 121 = <code>y</code>.</li><li>Konversikan semua angka sesuai urutan. Dapat menggunakan tabel ASCII, Python <code>chr()</code>, atau converter decimal-to-text.</li><li>Gabungkan seluruh karakter tanpa spasi tambahan.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 155" role="img" aria-label="Alur konversi ASCII"><rect x="15" y="34" width="160" height="76" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="95" y="62" text-anchor="middle" font-size="13" fill="#17211f">Decimal</text><text x="95" y="86" text-anchor="middle" font-size="17" font-family="monospace" fill="#17211f">99, 114, 121</text><path d="M185 72 H260" stroke="#d84a3a" stroke-width="3" fill="none"/><path d="M250 64 L262 72 L250 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="275" y="34" width="150" height="76" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="350" y="62" text-anchor="middle" font-size="13" fill="#17211f">ASCII lookup</text><text x="350" y="86" text-anchor="middle" font-size="17" font-family="monospace" fill="#17211f">c · r · y</text><path d="M435 72 H510" stroke="#d84a3a" stroke-width="3" fill="none"/><path d="M500 64 L512 72 L500 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="525" y="34" width="100" height="76" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="575" y="62" text-anchor="middle" font-size="12" fill="#17211f">Text</text><text x="575" y="86" text-anchor="middle" font-size="16" font-family="monospace" fill="#17211f">cry</text></svg><figcaption>Setiap nilai desimal dipetakan menjadi satu karakter ASCII.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> ASCII merupakan standar encoding karakter. Proses ini bukan dekripsi karena tidak menggunakan secret key. Pesan hanya direpresentasikan dalam bentuk angka.</p>
+  <p><strong>Contoh sebagian pemetaan:</strong> 99 → c, 114 → r, 121 → y, 112 → p, 116 → t, 111 → o, 123 → {.</p>
+ </div></details>
+ <details class="answer"><summary>Reveal flag / kunci jawaban</summary><div class="inside"><code class="answer-value">crypto{ASCII_pr1nt4bl3}</code><button class="copy-btn" data-copy="crypto{ASCII_pr1nt4bl3}">Salin jawaban</button><p class="note">Perhatikan angka <code>1</code> pada <code>pr1nt</code> dan angka <code>4</code> pada <code>4bl3</code>; jangan menggantinya dengan huruf.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="ascii"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="hex" data-category="cryptohack" data-chapter="1" data-search="hex hexadecimal decode bytes flag">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · General / Encoding</span><span class="level">Beginner · 5 pts</span></div><h3>03. Hex</h3><p class="card-desc">Mendekode string hexadecimal menjadi byte, lalu membaca byte sebagai teks.</p><div class="card-tags"><span>Hexadecimal</span><span>Base 16</span><span>Decode</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/general/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Data soal:</strong></p><div class="codeblock">63727970746f7b596f755f77696c6c5f62655f776f726b696e675f776974685f6865785f737472696e67735f615f6c6f747d</div>
+  <ol><li>Kenali bahwa input hanya berisi digit 0–9 dan huruf a–f, sehingga kemungkinan besar merupakan hexadecimal.</li><li>Kelompokkan dua digit per byte: <code>63 72 79 70 74 6f 7b ...</code>.</li><li>Ubah setiap pasangan menjadi byte. Misalnya <code>63</code> (hex) = 99 (decimal) = karakter <code>c</code>.</li><li>Terjemahkan seluruh byte sebagai teks ASCII/UTF-8.</li><li>Periksa apakah hasil dimulai dengan format flag <code>crypto{</code>.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 150" role="img" aria-label="Alur decoding hexadecimal"><rect x="12" y="34" width="190" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="107" y="61" text-anchor="middle" font-size="13" fill="#17211f">Hex string</text><text x="107" y="86" text-anchor="middle" font-size="19" font-family="monospace" fill="#17211f">63 72 79</text><path d="M210 72 H278" stroke="#d84a3a" stroke-width="3"/><path d="M268 64 L280 72 L268 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="292" y="34" width="145" height="75" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="364" y="61" text-anchor="middle" font-size="13" fill="#17211f">Bytes</text><text x="364" y="86" text-anchor="middle" font-size="19" font-family="monospace" fill="#17211f">99 114 121</text><path d="M445 72 H513" stroke="#d84a3a" stroke-width="3"/><path d="M503 64 L515 72 L503 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="527" y="34" width="100" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="577" y="61" text-anchor="middle" font-size="13" fill="#17211f">Text</text><text x="577" y="86" text-anchor="middle" font-size="19" font-family="monospace" fill="#17211f">cry</text></svg><figcaption>Dua digit hexadecimal membentuk satu byte.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> Hexadecimal adalah sistem bilangan basis 16 dengan simbol 0–9 dan A–F. Hex sering dipakai untuk menampilkan data biner dalam bentuk yang lebih ringkas dan mudah dibaca.</p>
+  <div class="note"><strong>CyberChef:</strong> gunakan recipe <code>From Hex</code>. Untuk data ini, hasilnya dapat langsung dibaca sebagai teks. Ingat: decoding hex tidak membutuhkan key.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal flag / kunci jawaban</summary><div class="inside"><code class="answer-value">crypto{You_will_be_working_with_hex_strings_a_lot}</code><button class="copy-btn" data-copy="crypto{You_will_be_working_with_hex_strings_a_lot}">Salin jawaban</button></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="hex"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="base64" data-category="cryptohack" data-chapter="1" data-search="base64 encoding hex bytes base64 encode">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · General / Encoding</span><span class="level">Beginner · 10 pts</span></div><h3>04. Base64</h3><p class="card-desc">Mendekode input hex menjadi bytes, lalu mengodekan bytes tersebut menjadi Base64.</p><div class="card-tags"><span>Base64</span><span>Hex → Bytes</span><span>Encoding</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/general/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Data soal:</strong></p><div class="codeblock">72bca9b68fc16ac7beeb8f849dca1d8a783e8acf9679bf9269f7bf</div>
+  <ol><li>Soal secara eksplisit meminta string hex diubah menjadi bytes, lalu di-encode ke Base64.</li><li>Buka CyberChef dan tambahkan operasi <code>From Hex</code>.</li><li>Tambahkan operasi <code>To Base64</code> setelahnya.</li><li>Pastikan urutan recipe benar: <code>From Hex → To Base64</code>.</li><li>Salin hasil output Base64 dan gunakan sebagai jawaban.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 160" role="img" aria-label="Pipeline Hex ke Base64"><rect x="12" y="42" width="145" height="70" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="84" y="69" text-anchor="middle" font-size="13" fill="#17211f">Input</text><text x="84" y="92" text-anchor="middle" font-size="16" font-family="monospace" fill="#17211f">Hex</text><path d="M165 77 H225" stroke="#d84a3a" stroke-width="3"/><path d="M215 69 L227 77 L215 85" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="239" y="42" width="145" height="70" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="311" y="69" text-anchor="middle" font-size="13" fill="#17211f">Operation 1</text><text x="311" y="92" text-anchor="middle" font-size="16" font-family="monospace" fill="#17211f">From Hex</text><path d="M392 77 H452" stroke="#d84a3a" stroke-width="3"/><path d="M442 69 L454 77 L442 85" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="466" y="42" width="162" height="70" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="547" y="69" text-anchor="middle" font-size="13" fill="#17211f">Operation 2</text><text x="547" y="92" text-anchor="middle" font-size="16" font-family="monospace" fill="#17211f">To Base64</text></svg><figcaption>Recipe harus memproses hex menjadi byte sebelum melakukan Base64 encoding.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> Base64 mengubah data biner menjadi teks yang terdiri dari 64 karakter dasar. Base64 bukan enkripsi: tidak ada secret key dan siapa pun dapat melakukan decoding.</p>
+  <div class="note warning"><strong>Kesalahan umum:</strong> jika langsung memakai <code>To Base64</code> pada string hex, yang dikodekan adalah karakter-karakter hex tersebut, bukan bytes yang dimaksud soal.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal jawaban</summary><div class="inside"><code class="answer-value">crypto/Base+64+Encoding+is+Web+Safe/</code><button class="copy-btn" data-copy="crypto/Base+64+Encoding+is+Web+Safe/">Salin jawaban</button><p class="note">Pada tantangan ini, jawaban adalah string Base64 hasil encoding dan tidak menggunakan format kurung kurawal <code>crypto{...}</code>.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="base64"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="xor" data-category="cryptohack" data-chapter="1" data-search="xor starter label integer 13 exclusive or">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · General / XOR</span><span class="level">Beginner · 10 pts</span></div><h3>05. XOR Starter</h3><p class="card-desc">Melakukan XOR pada setiap karakter string <code>label</code> dengan bilangan integer 13.</p><div class="card-tags"><span>XOR</span><span>Bitwise</span><span>Symmetric concept</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/courses/intro/xor0/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Data soal:</strong> plaintext <code>label</code>, nilai XOR <code>13</code>.</p>
+  <p>Aturan XOR: bit yang sama menghasilkan 0, sedangkan bit yang berbeda menghasilkan 1.</p>
+  <table><tr><th>Karakter</th><th>ASCII desimal</th><th>Operasi</th><th>Hasil desimal</th><th>Karakter hasil</th></tr><tr><td>l</td><td>108</td><td>108 XOR 13</td><td>97</td><td>a</td></tr><tr><td>a</td><td>97</td><td>97 XOR 13</td><td>108</td><td>l</td></tr><tr><td>b</td><td>98</td><td>98 XOR 13</td><td>111</td><td>o</td></tr><tr><td>e</td><td>101</td><td>101 XOR 13</td><td>104</td><td>h</td></tr><tr><td>l</td><td>108</td><td>108 XOR 13</td><td>97</td><td>a</td></tr></table>
+  <ol><li>Ubah setiap karakter ke nilai ASCII.</li><li>Lakukan XOR nilai tersebut dengan 13.</li><li>Ubah kembali hasil desimal menjadi karakter.</li><li>Gabungkan hasil karakter sesuai urutan.</li><li>Bungkus hasilnya dengan format flag CryptoHack.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 175" role="img" aria-label="Tabel kebenaran XOR"><text x="25" y="24" font-size="13" font-weight="bold" fill="currentColor">Truth table XOR</text><g font-size="13" fill="currentColor"><text x="95" y="60">A</text><text x="190" y="60">B</text><text x="295" y="60">A ⊕ B</text></g><g stroke="#1d7167" stroke-width="1" fill="#e8eee9"><rect x="65" y="72" width="70" height="24" rx="5"/><rect x="160" y="72" width="70" height="24" rx="5"/><rect x="265" y="72" width="70" height="24" rx="5"/><rect x="65" y="102" width="70" height="24" rx="5"/><rect x="160" y="102" width="70" height="24" rx="5"/><rect x="265" y="102" width="70" height="24" rx="5"/><rect x="65" y="132" width="70" height="24" rx="5"/><rect x="160" y="132" width="70" height="24" rx="5"/><rect x="265" y="132" width="70" height="24" rx="5"/></g><g font-size="13" text-anchor="middle" fill="#17211f"><text x="100" y="89">0</text><text x="195" y="89">0</text><text x="300" y="89">0</text><text x="100" y="119">0</text><text x="195" y="119">1</text><text x="300" y="119">1</text><text x="100" y="149">1</text><text x="195" y="149">0</text><text x="300" y="149">1</text></g><text x="420" y="95" font-size="14" fill="currentColor">XOR dengan key yang sama</text><text x="420" y="119" font-size="14" fill="currentColor">dua kali mengembalikan</text><text x="420" y="143" font-size="14" fill="currentColor">nilai semula.</text></svg><figcaption>Empat kombinasi dasar operasi XOR.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> XOR memiliki sifat self-inverse: <code>(x XOR k) XOR k = x</code>. Karena itu, operasi yang sama dapat digunakan untuk mengembalikan nilai awal jika key yang sama diketahui. Namun, XOR dengan satu key tetap yang sederhana bukan rancangan enkripsi yang aman untuk data nyata.</p>
+  <div class="codeblock">''.join(chr(ord(c) ^ 13) for c in 'label')</div>
+ </div></details>
+ <details class="answer"><summary>Reveal flag / kunci jawaban</summary><div class="inside"><code class="answer-value">crypto{aloha}</code><button class="copy-btn" data-copy="crypto{aloha}">Salin jawaban</button><p>Hasil XOR string adalah <code>aloha</code>, kemudian dibungkus menjadi flag.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="xor"> Tandai pembahasan selesai</label>
+</article>
+</div>
+
+<div class="chapter-band" id="bab2"><div class="eyebrow">BAB II</div><h3>Cryptographic Algorithms — RSA Starter</h3><p>Operasi modular, public key, private key, dan proses RSA decryption. Tantangan berasal dari kategori RSA Starter CryptoHack.</p></div>
+<div class="challenge-grid" id="grid-bab2">
+
+<article class="challenge-card" id="modexp" data-category="cryptohack" data-chapter="2" data-search="modular exponentiation 101 17 22663 rsa">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · RSA Starter</span><span class="level">Beginner · 10 pts</span></div><h3>06. Modular Exponentiation</h3><p class="card-desc">Menghitung perpangkatan modular sebagai operasi dasar yang digunakan dalam RSA.</p><div class="card-tags"><span>Modular arithmetic</span><span>RSA</span><span>Exponentiation</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/rsa/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <div class="taskbox"><strong>Soal</strong><p>Hitung <code>101^17 mod 22663</code>.</p></div>
+  <p>Gunakan metode repeated squaring agar tidak perlu menghitung nilai pangkat yang sangat besar.</p>
+  <ol><li>Uraikan eksponen 17 menjadi <code>16 + 1</code>.</li><li>Hitung pangkat dua secara berulang sambil mengambil modulus 22663 pada setiap langkah.</li><li>Kalikan hasil untuk pangkat 16 dan pangkat 1, lalu ambil modulus kembali.</li></ol>
+  <div class="codeblock">101^1  mod 22663 = 101
+101^2  mod 22663 = 10201
+101^4  mod 22663 = 14568
+101^8  mod 22663 = 10292
+101^16 mod 22663 = 21065
+101^17 mod 22663 = (21065 × 101) mod 22663
+                  = 19906</div>
+  <p>Verifikasi hasil dapat menggunakan Python:</p><div class="codeblock">pow(101, 17, 22663)</div>
+  <p><strong>Pembahasan.</strong> RSA menggunakan operasi perpangkatan modular. Operasi ini relatif mudah dihitung ketika nilai dasar, eksponen, dan modulus diketahui. Keamanan RSA tidak hanya bergantung pada operasi tersebut, melainkan pada kesulitan memperoleh faktor prima modulus dan informasi private key untuk ukuran parameter yang aman.</p>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><code class="answer-value">19906</code><button class="copy-btn" data-copy="19906">Salin jawaban</button><p class="note">Jawaban dimasukkan sebagai bilangan desimal sesuai instruksi tantangan.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="modexp"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="publickeys" data-category="cryptohack" data-chapter="2" data-search="public keys rsa encrypt 12 e 65537 p 17 q 23 ciphertext">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · RSA Starter</span><span class="level">Beginner · 15 pts</span></div><h3>07. Public Keys</h3><p class="card-desc">Membentuk modulus RSA dan mengenkripsi angka 12 menggunakan public exponent 65537.</p><div class="card-tags"><span>Public key</span><span>Modulus N</span><span>RSA encryption</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/rsa/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <div class="taskbox"><strong>Parameter soal</strong><p><code>m = 12</code>, <code>e = 65537</code>, <code>p = 17</code>, <code>q = 23</code>.</p></div>
+  <ol><li>Hitung modulus: <code>N = p × q = 17 × 23 = 391</code>.</li><li>Pasangan public key adalah <code>(N, e) = (391, 65537)</code>.</li><li>Gunakan rumus enkripsi RSA dasar: <code>c = m^e mod N</code>.</li><li>Substitusikan nilai: <code>c = 12^65537 mod 391</code>.</li><li>Gunakan kalkulator modular atau Python <code>pow(12,65537,391)</code> untuk memperoleh ciphertext.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 145" role="img" aria-label="RSA public key encryption"><rect x="15" y="34" width="135" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="82" y="62" text-anchor="middle" font-size="13" fill="#17211f">Plain number</text><text x="82" y="87" text-anchor="middle" font-size="20" font-family="monospace" fill="#17211f">m = 12</text><path d="M160 72 H225" stroke="#d84a3a" stroke-width="3"/><path d="M215 64 L227 72 L215 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="239" y="34" width="170" height="75" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="324" y="62" text-anchor="middle" font-size="13" fill="#17211f">Encrypt</text><text x="324" y="87" text-anchor="middle" font-size="17" font-family="monospace" fill="#17211f">m^e mod N</text><path d="M419 72 H484" stroke="#d84a3a" stroke-width="3"/><path d="M474 64 L486 72 L474 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="498" y="34" width="127" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="561" y="62" text-anchor="middle" font-size="13" fill="#17211f">Ciphertext</text><text x="561" y="87" text-anchor="middle" font-size="20" font-family="monospace" fill="#17211f">c</text></svg><figcaption>Model sederhana enkripsi RSA dengan public key.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> Public key terdiri dari modulus <code>N</code> dan exponent <code>e</code>. Public key boleh dibagikan agar pihak lain dapat mengenkripsi pesan untuk pemilik private key.</p>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><code class="answer-value">301</code><button class="copy-btn" data-copy="301">Salin jawaban</button><p>Nilai modulus adalah <code>N = 391</code>. Hasil operasi <code>12^65537 mod 391</code> adalah 301.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="publickeys"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="privatekeys" data-category="cryptohack" data-chapter="2" data-search="private keys RSA phi totient inverse modular d p q">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · RSA Starter</span><span class="level">Beginner+ · 20 pts</span></div><h3>08. Private Keys</h3><p class="card-desc">Menghitung private exponent <code>d</code> menggunakan invers modular terhadap Euler's totient.</p><div class="card-tags"><span>Private key</span><span>Euler totient</span><span>Modular inverse</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/rsa/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <div class="taskbox"><strong>Parameter soal</strong><p><code>p = 857504083339712752489993810777</code><br><code>q = 1029224947942998075080348647219</code><br><code>e = 65537</code></p></div>
+  <ol><li>Hitung modulus <code>N = p × q</code>.</li><li>Hitung Euler's totient untuk dua prima berbeda: <code>φ(N) = (p−1)(q−1)</code>.</li><li>Private exponent <code>d</code> adalah invers modular dari <code>e</code> modulo <code>φ(N)</code>.</li><li>Cari nilai <code>d</code> yang memenuhi <code>(e × d) mod φ(N) = 1</code>.</li><li>Verifikasi dengan Python <code>pow(e, -1, phi)</code> pada Python 3.8 atau lebih baru.</li></ol>
+  <div class="codeblock">phi = (p - 1) * (q - 1)
+d = pow(65537, -1, phi)
+print(d)</div>
+  <p><strong>Pembahasan.</strong> Private exponent tidak dipilih secara acak dalam konstruksi RSA dasar. Nilai ini dihitung sebagai invers modular public exponent terhadap totient. Informasi faktor prima <code>p</code> dan <code>q</code> harus dirahasiakan karena dapat digunakan untuk menghitung private key.</p>
+  <div class="note warning"><strong>Level:</strong> Beginner+. Konsep public/private key sudah dasar, tetapi operasi invers modular membutuhkan pemahaman aritmetika modular atau bantuan kalkulator/Python.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><strong>Nilai φ(N)</strong><code class="answer-value">882564595536224140639625987657529300394956519977044270821168</code><button class="copy-btn" data-copy="882564595536224140639625987657529300394956519977044270821168">Salin φ(N)</button><strong>Private exponent d</strong><code class="answer-value">121832886702415731577073962957377780195510499965398469843281</code><button class="copy-btn" data-copy="121832886702415731577073962957377780195510499965398469843281">Salin d</button></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="privatekeys"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="rsadec" data-category="cryptohack" data-chapter="2" data-search="RSA decryption ciphertext c N e private exponent plaintext 13371337">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · RSA Starter</span><span class="level">Beginner+ · 20 pts</span></div><h3>09. RSA Decryption</h3><p class="card-desc">Menggunakan private exponent untuk mengembalikan ciphertext menjadi plaintext numerik.</p><div class="card-tags"><span>RSA decryption</span><span>Private exponent</span><span>Plaintext</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/rsa/" target="_blank" rel="noopener">Buka challenge ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <div class="taskbox"><strong>Parameter soal</strong><p><code>N = 882564595536224140639625987659416029426239230804614613279163</code><br><code>e = 65537</code><br><code>c = 77578995801157823671636298847186723593814843845525223303932</code></p></div>
+  <ol><li>Gunakan nilai <code>p</code>, <code>q</code>, dan <code>d</code> dari tantangan Private Keys sebelumnya.</li><li>Pastikan modulus <code>N = p × q</code> sama dengan modulus pada soal ini.</li><li>Gunakan rumus dekripsi RSA dasar: <code>m = c^d mod N</code>.</li><li>Hitung dengan Python <code>pow(c, d, N)</code>.</li><li>Masukkan hasil bilangan desimal ke jawaban CryptoHack.</li></ol>
+  <div class="codeblock">m = pow(c, d, N)
+print(m)</div>
+  <p><strong>Pembahasan.</strong> Proses dekripsi menggunakan private exponent. Hasilnya pada tantangan ini berupa bilangan numerik, bukan teks panjang. Dalam representasi pesan nyata, bilangan tersebut dapat dikonversi kembali menjadi byte sesuai skema encoding yang digunakan.</p>
+  <div class="note warning">Tantangan ini merupakan lanjutan langsung dari Private Keys. Jika nilai <code>d</code> salah atau berasal dari parameter RSA yang berbeda, plaintext tidak akan sesuai.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><code class="answer-value">13371337</code><button class="copy-btn" data-copy="13371337">Salin jawaban</button></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="rsadec"> Tandai pembahasan selesai</label>
+</article>
+</div>
+
+<div class="chapter-band" id="bab5"><div class="eyebrow">BAB V–VI</div><h3>PKI, Digital Certificate & Secure Communication</h3><p>Memeriksa identitas domain melalui sertifikat dan memahami fungsi Certificate Authority dalam TLS.</p></div>
+<div class="challenge-grid">
+<article class="challenge-card" id="secureprotocols" data-category="cryptohack" data-chapter="5" data-search="secure protocols tls1 cryptohack certificate authority issuer lets encrypt PKI">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · Crypto on the Web</span><span class="level">Beginner · 5 pts</span></div><h3>10. Secure Protocols</h3><p class="card-desc">Menemukan nama organisasi Certificate Authority (CA) yang menerbitkan sertifikat TLS untuk domain tantangan.</p><div class="card-tags"><span>PKI</span><span>Certificate Authority</span><span>Issuer</span><span>TLS</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/web/" target="_blank" rel="noopener">Buka challenge ↗</a><a class="link-btn" style="background:var(--accent2)" href="https://tls1.cryptohack.org/" target="_blank" rel="noopener">Buka domain ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Skenario:</strong> CryptoHack meminta peserta mencari nama organisasi CA yang menerbitkan sertifikat TLS untuk <code>tls1.cryptohack.org</code>. Tantangan dapat diselesaikan menggunakan browser.</p>
+  <ol><li>Buka <code>https://tls1.cryptohack.org</code> menggunakan Chrome atau Firefox.</li><li>Klik ikon kontrol/informasi situs di sebelah alamat domain.</li><li>Buka informasi koneksi dan sertifikat digital.</li><li>Temukan bagian <strong>Issuer</strong>, bukan Subject.</li><li>Periksa nama organisasi penerbit pada sertifikat. Jangan hanya mengambil Common Name sertifikat perantara; fokus pada nama organisasi CA yang diminta.</li><li>Masukkan nama organisasi CA sebagai jawaban pada CryptoHack.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 180" role="img" aria-label="Certificate chain of trust"><rect x="210" y="8" width="220" height="42" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="320" y="34" text-anchor="middle" font-size="13" fill="#17211f">Root CA / Trust Anchor</text><path d="M320 50 V69" stroke="#d84a3a" stroke-width="2"/><path d="M313 62 L320 71 L327 62" fill="none" stroke="#d84a3a" stroke-width="2"/><rect x="210" y="75" width="220" height="42" rx="8" fill="#f8e9e4" stroke="#d84a3a"/><text x="320" y="101" text-anchor="middle" font-size="13" fill="#17211f">Intermediate CA</text><path d="M320 117 V136" stroke="#d84a3a" stroke-width="2"/><path d="M313 129 L320 138 L327 129" fill="none" stroke="#d84a3a" stroke-width="2"/><rect x="210" y="142" width="220" height="32" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="320" y="163" text-anchor="middle" font-size="13" fill="#17211f">Server Certificate</text></svg><figcaption>Rantai kepercayaan sertifikat: sertifikat server terhubung melalui intermediate CA ke trust anchor.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> CA adalah pihak yang menerbitkan/menandatangani sertifikat digital setelah proses validasi sesuai jenis sertifikat. Browser memeriksa tanda tangan, masa berlaku, identitas hostname, dan rantai kepercayaan. Field Issuer menunjukkan penerbit sertifikat yang sedang dilihat.</p>
+  <div class="note warning"><strong>Perhatian:</strong> sertifikat TLS dapat diperbarui atau diterbitkan ulang. Jika sertifikat domain berubah, Issuer yang tampil pada browser dapat berubah pula. Kunci di bawah merujuk pada jawaban write-up yang diverifikasi untuk tantangan ini; saat demonstrasi kelas, cocokkan dengan sertifikat live yang tampil.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><code class="answer-value">Let's Encrypt</code><button class="copy-btn" data-copy="Let's Encrypt">Salin jawaban</button><p>Nama organisasi CA yang diminta adalah Let's Encrypt. Ini adalah nama organisasi penerbit, bukan nama host sertifikat perantara.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="secureprotocols"> Tandai pembahasan selesai</label>
+</article>
+</div>
+
+<div class="chapter-band" id="bab7"><div class="eyebrow">BAB VII</div><h3>Data in Transit Security & Network Protection</h3><p>Analisis paket TLS dan latihan menemukan informasi pada trafik HTTP serta DNS.</p></div>
+<div class="challenge-grid">
+<article class="challenge-card" id="sharks" data-category="cryptohack" data-chapter="7" data-search="sharks on the wire wireshark pcapng packets destination cryptohack.org">
+ <div class="card-top"><div class="card-labels"><span class="category">CryptoHack · Crypto on the Web</span><span class="level">Beginner · 10 pts</span></div><h3>11. Sharks on the Wire</h3><p class="card-desc">Mengenali paket pada file PCAPNG dan menghitung paket yang diterima server CryptoHack.</p><div class="card-tags"><span>Wireshark</span><span>PCAPNG</span><span>Packet filter</span><span>TLS traffic</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://cryptohack.org/challenges/web/" target="_blank" rel="noopener">Buka challenge ↗</a><a class="link-btn" style="background:var(--accent2)" href="https://www.wireshark.org/download.html" target="_blank" rel="noopener">Wireshark ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Skenario:</strong> peserta membuka file <code>cryptohack.org.pcapng</code>, yang berisi 50 paket pertama saat halaman CryptoHack diakses menggunakan Firefox. Pertanyaannya: berapa paket yang diterima server CryptoHack, yaitu paket dengan destination CryptoHack.org?</p>
+  <ol><li>Buka tantangan Sharks on the Wire dan unduh file <code>cryptohack.org.pcapng</code> yang tersedia di challenge.</li><li>Buka file tersebut menggunakan Wireshark.</li><li>Kenali alamat IP server CryptoHack yang dicantumkan pada deskripsi: <code>178.62.74.206</code>.</li><li>Masukkan display filter <code>ip.dst == 178.62.74.206</code> pada filter bar.</li><li>Tekan Enter. Wireshark akan menampilkan paket yang alamat tujuan IP-nya adalah server CryptoHack.</li><li>Lihat jumlah paket yang ditampilkan pada status bar bagian bawah Wireshark. Itulah jumlah paket yang menjawab pertanyaan.</li><li>Hapus filter untuk kembali melihat seluruh paket.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 145" role="img" aria-label="Filter paket berdasarkan alamat tujuan"><rect x="12" y="34" width="180" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="102" y="61" text-anchor="middle" font-size="13" fill="#17211f">PCAPNG</text><text x="102" y="85" text-anchor="middle" font-size="12" fill="#17211f">50 packets</text><path d="M202 72 H270" stroke="#d84a3a" stroke-width="3"/><path d="M260 64 L272 72 L260 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="284" y="34" width="185" height="75" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="376" y="61" text-anchor="middle" font-size="12" fill="#17211f">Display filter</text><text x="376" y="85" text-anchor="middle" font-size="13" font-family="monospace" fill="#17211f">ip.dst == ...</text><path d="M479 72 H538" stroke="#d84a3a" stroke-width="3"/><path d="M528 64 L540 72 L528 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="550" y="34" width="78" height="75" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="589" y="61" text-anchor="middle" font-size="12" fill="#17211f">Count</text><text x="589" y="85" text-anchor="middle" font-size="18" font-weight="bold" fill="#17211f">15</text></svg><figcaption>Filter hanya menampilkan paket yang destination IPv4-nya adalah server CryptoHack.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> Display filter <code>ip.dst</code> menyaring paket berdasarkan alamat tujuan IPv4. Filter ini tidak menghapus paket dari file, hanya mengatur paket mana yang ditampilkan. Jumlah paket yang cocok menjadi jawaban.</p>
+  <div class="note warning"><strong>Catatan pembelajaran:</strong> tantangan ini membutuhkan Wireshark dan file capture. Jika mahasiswa belum familiar dengan Wireshark, jadikan sebagai pengayaan; praktik utama perbandingan HTTP/HTTPS tetap menggunakan OSI Model Simulator.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal kunci jawaban</summary><div class="inside"><code class="answer-value">15</code><button class="copy-btn" data-copy="15">Salin jawaban</button><p>Jumlah paket dengan alamat tujuan server CryptoHack adalah 15. Jawaban berupa angka, bukan flag dengan format <code>crypto{...}</code>.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="sharks"> Tandai pembahasan selesai</label>
+</article>
+
+<article class="challenge-card" id="thm" data-category="tryhackme" data-chapter="7" data-search="tryhackme network traffic basics http dns scenario flags web proxy wp1 dns server srv-dns TXT">
+ <div class="card-top"><div class="card-labels"><span class="category">TryHackMe · Network Traffic Basics</span><span class="level">Easy · Beginner</span></div><h3>12. Network Traffic Basics</h3><p class="card-desc">Menemukan dua flag dari simulasi lalu lintas jaringan: satu pada HTTP traffic dan satu pada DNS traffic.</p><div class="card-tags"><span>HTTP traffic</span><span>DNS TXT</span><span>Network tap</span><span>2 flags</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://tryhackme.com/room/networktrafficbasics" target="_blank" rel="noopener">Buka room ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Persiapan.</strong> Masuk ke akun TryHackMe, buka room Network Traffic Basics, lalu mulai room. Platform mencantumkan Pre Security dan Networking Essentials sebagai pengetahuan prasyarat yang disarankan. Latihan flag terdapat pada Task 5, melalui static site yang dibuka dengan tombol <strong>View Site</strong>.</p>
+  <h4>Scenario 1 — HTTP Traffic</h4>
+  <ol><li>Buka static site dari Task 5.</li><li>Perhatikan topologi jaringan dan tempatkan Network Tap pada jalur web proxy <strong>WP1</strong> (pada link antara WP1 dan firewall, sesuai petunjuk skenario).</li><li>Jalankan simulasi dan amati daftar paket/traffic yang tertangkap.</li><li>Telusuri HTTP response yang membawa file ZIP hasil unduhan. Fokus pada event/log terakhir.</li><li>Buka detail HTTP response dan periksa bagian body atau preview file.</li><li>Temukan string flag dengan format <code>THM{...}</code>.</li></ol>
+  <h4>Scenario 2 — DNS Traffic</h4>
+  <ol><li>Ulangi static site untuk skenario DNS.</li><li>Tempatkan Network Tap pada jalur menuju DNS server internal <strong>SRV-DNS</strong>, bukan pada workstation yang tidak diketahui.</li><li>Jalankan simulasi dan cari DNS response dengan tipe record <strong>TXT</strong>.</li><li>Periksa respons untuk domain yang ditampilkan dalam skenario, yaitu <code>c2.tryhackrne.thn</code>.</li><li>Buka isi TXT record dan temukan flag <code>THM{...}</code>.</li></ol>
+  <figure class="diagram"><svg viewBox="0 0 640 210" role="img" aria-label="Network tap pada web proxy dan DNS server"><rect x="15" y="18" width="112" height="48" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="71" y="47" text-anchor="middle" font-size="12" fill="#17211f">Client LAN</text><path d="M127 42 H190" stroke="#68736f" stroke-width="2"/><rect x="190" y="18" width="110" height="48" rx="8" fill="#f8e9e4" stroke="#d84a3a"/><text x="245" y="47" text-anchor="middle" font-size="12" fill="#17211f">WP1 Proxy</text><path d="M300 42 H370" stroke="#68736f" stroke-width="2"/><rect x="370" y="18" width="110" height="48" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="425" y="47" text-anchor="middle" font-size="12" fill="#17211f">Firewall</text><path d="M480 42 H540" stroke="#68736f" stroke-width="2"/><rect x="540" y="18" width="88" height="48" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="584" y="47" text-anchor="middle" font-size="12" fill="#17211f">Internet</text><path d="M245 67 V90" stroke="#d84a3a" stroke-width="2"/><circle cx="245" cy="103" r="12" fill="#d84a3a"/><text x="245" y="107" text-anchor="middle" font-size="10" fill="#fff">TAP</text><text x="270" y="107" font-size="11" fill="currentColor">Scenario 1: HTTP</text><rect x="15" y="145" width="140" height="48" rx="8" fill="#e8eee9" stroke="#1d7167"/><text x="85" y="174" text-anchor="middle" font-size="12" fill="#17211f">LAN Switch</text><path d="M155 169 H245" stroke="#68736f" stroke-width="2"/><rect x="245" y="145" width="140" height="48" rx="8" fill="#f8e9e4" stroke="#d84a3a"/><text x="315" y="174" text-anchor="middle" font-size="12" fill="#17211f">SRV-DNS</text><path d="M315 144 V125" stroke="#d84a3a" stroke-width="2"/><circle cx="315" cy="113" r="12" fill="#d84a3a"/><text x="315" y="117" text-anchor="middle" font-size="10" fill="#fff">TAP</text><text x="340" y="117" font-size="11" fill="currentColor">Scenario 2: DNS</text></svg><figcaption>Skema konseptual lokasi tap untuk dua skenario. Ikuti topologi interaktif asli TryHackMe ketika mengerjakan.</figcaption></figure>
+  <p><strong>Pembahasan Scenario 1.</strong> Semua trafik HTTPS keluar diarahkan melalui web proxy. Dengan menempatkan tap di titik yang tepat, analis dapat mengamati HTTP response pada sisi proxy dan menelusuri file unduhan yang disimulasikan. Flag berada pada isi data yang terkait unduhan ZIP.</p>
+  <p><strong>Pembahasan Scenario 2.</strong> Host mengirim query ke DNS internal. Record TXT dapat membawa teks arbitrer dan dalam skenario ini digunakan untuk menyisipkan instruksi C2. Karena itu, analis perlu memeriksa isi DNS response, bukan hanya nama domain.</p>
+  <div class="note">Room ini dikategorikan Easy, tetapi pengetahuan dasar alur jaringan sangat membantu. TryHackMe menyarankan Pre Security dan Networking Essentials sebagai prasyarat.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal dua flag jawaban</summary><div class="inside"><strong>Scenario 1 — HTTP traffic</strong><code class="answer-value">THM{FoundTheMalware}</code><button class="copy-btn" data-copy="THM{FoundTheMalware}">Salin flag HTTP</button><strong>Scenario 2 — DNS traffic</strong><code class="answer-value">THM{C2CommandFound}</code><button class="copy-btn" data-copy="THM{C2CommandFound}">Salin flag DNS</button><p class="note">Flag di atas cocok dengan write-up publik room Network Traffic Basics. Mahasiswa tetap perlu menemukan flag melalui static site TryHackMe, bukan sekadar menyalin jawaban.</p></div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="thm"> Tandai pembahasan selesai</label>
+</article>
+</div>
+
+<div class="chapter-band" id="bab8"><div class="eyebrow">BAB VIII</div><h3>Cryptographic Best Practices — Mini Audit TLS</h3><p>Aktivitas evaluasi konfigurasi TLS. Ini bukan CTF dengan flag tetap, tetapi latihan interpretasi hasil pemeriksaan keamanan server.</p></div>
+<div class="challenge-grid">
+<article class="challenge-card" id="ssllabs" data-category="audit" data-chapter="8" data-search="SSL Labs server test grade TLS version cipher suites certificate validation configuration audit">
+ <div class="card-top"><div class="card-labels"><span class="category">Qualys SSL Labs · Mini Audit</span><span class="level">Beginner · No fixed flag</span></div><h3>13. SSL Labs — SSL Server Test</h3><p class="card-desc">Menganalisis grade, versi TLS, cipher suites, sertifikat, dan konfigurasi keamanan server publik.</p><div class="card-tags"><span>TLS configuration</span><span>Certificate validation</span><span>Best practices</span></div></div>
+ <div class="card-actions"><a class="link-btn" href="https://www.ssllabs.com/ssltest/analyze.html" target="_blank" rel="noopener">Buka SSL Labs ↗</a></div>
+ <details class="walkthrough"><summary>Langkah penyelesaian & pembahasan</summary><div class="inside">
+  <p><strong>Tujuan.</strong> Mahasiswa membaca laporan konfigurasi TLS dan menyusun kesimpulan singkat berdasarkan bukti yang ditampilkan.</p>
+  <ol><li>Buka SSL Labs SSL Server Test.</li><li>Masukkan hostname yang ditentukan dosen, misalnya <code>www.google.com</code> atau <code>www.wikipedia.org</code>.</li><li>Jalankan tes dan tunggu laporan selesai. Analisis dapat membutuhkan waktu karena layanan menguji server dari sisi publik.</li><li>Catat overall grade yang tampil.</li><li>Periksa protokol TLS yang didukung dan apakah masih ada versi lama yang aktif.</li><li>Periksa cipher suites yang didukung, informasi sertifikat, masa berlaku, issuer, dan chain.</li><li>Identifikasi temuan atau konfigurasi yang dapat diperbaiki.</li><li>Tulis tiga temuan dan satu rekomendasi yang relevan.</li></ol>
+  <table><tr><th>Komponen</th><th>Yang harus diperiksa</th><th>Interpretasi</th></tr><tr><td>Overall grade</td><td>Nilai akhir dari SSL Labs</td><td>Ringkasan konfigurasi TLS yang diuji</td></tr><tr><td>Protocol support</td><td>TLS 1.2, TLS 1.3, versi lama</td><td>Versi protokol yang diaktifkan server</td></tr><tr><td>Cipher suites</td><td>Algoritma dan mode yang dinegosiasikan</td><td>Kekuatan konfigurasi kriptografi</td></tr><tr><td>Certificate</td><td>Issuer, SAN, validity, chain</td><td>Identitas dan kepercayaan sertifikat</td></tr><tr><td>Warnings</td><td>Temuan konfigurasi yang dilaporkan</td><td>Area yang perlu ditinjau lebih lanjut</td></tr></table>
+  <figure class="diagram"><svg viewBox="0 0 640 150" role="img" aria-label="Alur mini audit SSL Labs"><rect x="12" y="36" width="135" height="72" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="79" y="64" text-anchor="middle" font-size="13" fill="#17211f">Hostname</text><text x="79" y="87" text-anchor="middle" font-size="12" fill="#17211f">Target server</text><path d="M155 72 H218" stroke="#d84a3a" stroke-width="3"/><path d="M208 64 L220 72 L208 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="232" y="36" width="165" height="72" rx="10" fill="#f8e9e4" stroke="#d84a3a"/><text x="314" y="64" text-anchor="middle" font-size="13" fill="#17211f">SSL Labs</text><text x="314" y="87" text-anchor="middle" font-size="12" fill="#17211f">TLS analysis</text><path d="M405 72 H468" stroke="#d84a3a" stroke-width="3"/><path d="M458 64 L470 72 L458 80" stroke="#d84a3a" stroke-width="3" fill="none"/><rect x="482" y="36" width="146" height="72" rx="10" fill="#e8eee9" stroke="#1d7167"/><text x="555" y="64" text-anchor="middle" font-size="13" fill="#17211f">Report</text><text x="555" y="87" text-anchor="middle" font-size="12" fill="#17211f">Findings</text></svg><figcaption>Mini audit: hostname → analisis SSL Labs → laporan dan rekomendasi.</figcaption></figure>
+  <p><strong>Pembahasan.</strong> SSL Labs memberikan gambaran konfigurasi TLS dari server yang dapat diakses melalui internet. Hasilnya bergantung pada konfigurasi target dan waktu pengujian. Grade yang tinggi bukan bukti bahwa seluruh aplikasi aman; penilaian tidak menggantikan audit source code, autentikasi aplikasi, endpoint, atau tata kelola keamanan.</p>
+  <div class="note warning"><strong>Tidak ada flag tetap.</strong> Jangan menulis satu grade sebagai kunci universal. Kunci jawaban mini audit berupa interpretasi yang konsisten dengan laporan aktual yang diperoleh saat pengujian.</div>
+ </div></details>
+ <details class="answer"><summary>Reveal kriteria kunci jawaban / rubrik mini audit</summary><div class="inside">
+  <p>Jawaban mahasiswa dianggap tepat apabila memuat seluruh unsur berikut:</p>
+  <ol><li>Menyebutkan hostname dan waktu pengujian.</li><li>Mencatat grade sesuai hasil aktual SSL Labs.</li><li>Menyebutkan versi TLS yang benar-benar didukung oleh target.</li><li>Mengidentifikasi informasi sertifikat: Issuer, SAN, masa berlaku, dan chain.</li><li>Menjelaskan minimal satu temuan konfigurasi berdasarkan laporan, bukan menebak.</li><li>Memberikan rekomendasi yang sesuai dengan temuan.</li></ol>
+  <p><strong>Contoh format kesimpulan:</strong></p><div class="codeblock">Target: [hostname]
+Tanggal pengujian: [tanggal]
+Grade: [grade aktual]
+TLS version: [hasil aktual]
+Certificate: [Issuer, SAN, validity]
+Temuan: [temuan yang terlihat pada laporan]
+Rekomendasi: [perbaikan berdasarkan temuan]</div>
+  <button class="copy-btn" data-copy="Target: [hostname]\nTanggal pengujian: [tanggal]\nGrade: [grade aktual]\nTLS version: [hasil aktual]\nCertificate: [Issuer, SAN, validity]\nTemuan: [temuan yang terlihat pada laporan]\nRekomendasi: [perbaikan berdasarkan temuan]">Salin template audit</button>
+ </div></details>
+ <label class="complete"><input type="checkbox" class="done-check" data-id="ssllabs"> Tandai pembahasan selesai</label>
+</article>
+</div>
+
+<section id="sources">
+ <div class="section-head"><div><h2>Sumber tantangan & referensi</h2><p>Sumber primer platform dan rujukan write-up untuk memeriksa kunci jawaban.</p></div></div>
+ <div class="source-list">
+  <div class="source"><strong>CryptoHack — Introduction</strong><p>Finding Flags, format flag, dan course pemula.</p><a href="https://cryptohack.org/courses/intro/course_details/" target="_blank" rel="noopener">Buka sumber ↗</a></div>
+  <div class="source"><strong>CryptoHack — General</strong><p>ASCII, Hex, Base64, dan operasi XOR.</p><a href="https://cryptohack.org/challenges/general/" target="_blank" rel="noopener">Buka sumber ↗</a></div>
+  <div class="source"><strong>CryptoHack — RSA</strong><p>Modular Exponentiation, Public Keys, Private Keys, dan RSA Decryption.</p><a href="https://cryptohack.org/challenges/rsa/" target="_blank" rel="noopener">Buka sumber ↗</a></div>
+  <div class="source"><strong>CryptoHack — Crypto on the Web</strong><p>Secure Protocols dan Sharks on the Wire.</p><a href="https://cryptohack.org/challenges/web/" target="_blank" rel="noopener">Buka sumber ↗</a></div>
+  <div class="source"><strong>TryHackMe — Network Traffic Basics</strong><p>Room resmi, tujuan pembelajaran, dan task analisis trafik.</p><a href="https://tryhackme.com/room/networktrafficbasics" target="_blank" rel="noopener">Buka room ↗</a></div>
+  <div class="source"><strong>TryHackMe — Community write-up</strong><p>Rujukan verifikasi jawaban flag HTTP dan DNS.</p><a href="https://medium.com/@jonathan.sanfer/network-traffic-basics-what-to-observe-where-traffic-flows-and-how-to-capture-it-fd46647caced" target="_blank" rel="noopener">Buka write-up ↗</a></div>
+  <div class="source"><strong>CryptoHack — Community solutions index</strong><p>Rujukan tambahan untuk hasil challenge CryptoHack dan Sharks on the Wire.</p><a href="https://github.com/jeonyujin4209/crypto_ctf" target="_blank" rel="noopener">Buka repository ↗</a></div>
+  <div class="source"><strong>Qualys SSL Labs</strong><p>Pengujian konfigurasi TLS server publik.</p><a href="https://www.ssllabs.com/ssltest/" target="_blank" rel="noopener">Buka SSL Labs ↗</a></div>
+ </div>
+ <div class="disclaimer"><strong>Catatan verifikasi:</strong> jawaban numerik dan flag yang berasal dari data soal statis dapat dihitung ulang. Jawaban berbasis kondisi layanan langsung—terutama Issuer sertifikat dan laporan SSL Labs—perlu diperiksa kembali saat kelas karena sertifikat, konfigurasi server, dan laporan dapat berubah. Untuk Secure Protocols, kunci “Let's Encrypt” adalah jawaban dari write-up tantangan yang dirujuk; bila sertifikat live berganti, gunakan Issuer yang tampil saat demonstrasi.</div>
+</section>
+
+<footer class="footer">
+ <strong>CTF Field Notes · Pertemuan 6</strong><br>
+ Mata Kuliah Keamanan Komputer dan Jaringan · Cryptography and Secure Communication.<br>
+ Dokumen ini merupakan bahan pendamping pembelajaran, bukan pengganti instruksi resmi pada masing-masing platform.
+</footer>
+</main>
+</div>
+
+<script>
+(function(){
+ const body=document.body;
+ const themeSelect=document.getElementById('themeSelect');
+ const savedTheme=localStorage.getItem('ctf6-theme')||'default';
+ body.dataset.theme=savedTheme;
+ themeSelect.value=savedTheme;
+ themeSelect.addEventListener('change',()=>{body.dataset.theme=themeSelect.value;localStorage.setItem('ctf6-theme',themeSelect.value)});
+ const details=()=>Array.from(document.querySelectorAll('details'));
+ document.getElementById('expandAll').addEventListener('click',()=>details().forEach(d=>d.open=true));
+ document.getElementById('collapseAll').addEventListener('click',()=>details().forEach(d=>d.open=false));
+ let keysOpen=false;
+ document.getElementById('showKeys').addEventListener('click',()=>{
+  keysOpen=!keysOpen;
+  document.querySelectorAll('details.answer').forEach(d=>d.open=keysOpen);
+  document.getElementById('showKeys').textContent=keysOpen?'Tutup semua kunci':'Mode dosen: kunci';
+ });
+ document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',async()=>{
+  const value=btn.getAttribute('data-copy');
+  try{await navigator.clipboard.writeText(value);const old=btn.textContent;btn.textContent='Tersalin ✓';setTimeout(()=>btn.textContent=old,1400)}
+  catch(e){const ta=document.createElement('textarea');ta.value=value;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();btn.textContent='Tersalin ✓'}
+ }));
+ const cards=Array.from(document.querySelectorAll('.challenge-card[data-category]'));
+ const search=document.getElementById('searchInput');
+ let activeFilter='all';
+ function filterCards(){
+  const q=search.value.toLowerCase().trim();let visible=0;
+  cards.forEach(card=>{
+   const category=card.dataset.category;
+   const text=(card.innerText+' '+(card.dataset.search||'')).toLowerCase();
+   const show=(activeFilter==='all'||category===activeFilter)&&(!q||text.includes(q));
+   card.classList.toggle('hidden-card',!show);if(show)visible++;
+  });
+  document.getElementById('emptyState').style.display=visible?'none':'block';
+  document.querySelectorAll('.chapter-band').forEach(band=>{
+   const next=band.nextElementSibling;
+   if(next&&next.classList.contains('challenge-grid')){
+    const has=Array.from(next.querySelectorAll('.challenge-card')).some(c=>!c.classList.contains('hidden-card'));
+    band.style.display=has?'':'none';next.style.display=has?'':'none';
+   }
+  });
+ }
+ search.addEventListener('input',filterCards);
+ document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');activeFilter=btn.dataset.filter;filterCards();
+ }));
+ const checks=Array.from(document.querySelectorAll('.done-check'));
+ const storageKey='ctf6-writeup-progress';
+ const stored=JSON.parse(localStorage.getItem(storageKey)||'{}');
+ checks.forEach(ch=>{
+  ch.checked=!!stored[ch.dataset.id];
+  ch.addEventListener('change',()=>{
+   const state=JSON.parse(localStorage.getItem(storageKey)||'{}');state[ch.dataset.id]=ch.checked;
+   localStorage.setItem(storageKey,JSON.stringify(state));updateProgress();
+  });
+ });
+ function updateProgress(){
+  const done=checks.filter(c=>c.checked).length;
+  document.getElementById('progressText').textContent=done+' / '+checks.length+' selesai';
+  document.getElementById('progressBar').style.width=(done/checks.length*100)+'%';
+ }
+ updateProgress();
+})();
+</script>
+</body>
+</html>
