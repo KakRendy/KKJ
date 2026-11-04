@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Praktikum — RSA Digital Signature & Encryption</title>
+<style>
+:root{
+  --navy:#10243a;--navy2:#183653;--blue:#2563eb;--cyan:#0891b2;
+  --ink:#172334;--muted:#617187;--line:#dce5ef;--bg:#f3f6fa;
+  --white:#fff;--green:#16834a;--greenbg:#eaf7ef;--amber:#a45b08;
+  --amberbg:#fff5df;--red:#b42318;--redbg:#fff0ee;--shadow:0 10px 30px rgba(22,43,70,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:#1558b0;text-decoration:none}a:hover{text-decoration:underline}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.container{width:min(1180px,calc(100% - 32px));margin:auto}
+.hero{background:linear-gradient(120deg,#10243a,#183e61 62%,#087e99);color:#fff;padding:38px 0 32px}
+.hero .eyebrow{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:#b9d9ee;font-weight:800}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.12;margin:10px 0 12px;max-width:900px}
+.hero p{color:#d7e8f5;max-width:850px;margin:0}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{display:inline-flex;padding:5px 10px;border:1px solid #ffffff42;border-radius:999px;font-size:.8rem;color:#edf7ff}
+.topnav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 3px 12px #12243a0a}
+.navinner{display:flex;gap:6px;overflow:auto;padding:9px 0;white-space:nowrap}
+.navinner a{padding:7px 11px;border-radius:8px;font-size:.86rem;color:#30445c;font-weight:650}
+.navinner a:hover{background:#edf4fb;text-decoration:none}
+main{padding:24px 0 55px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.card h2{font-size:1.35rem;margin:0 0 12px;color:var(--navy)}
+.card h3{font-size:1.04rem;margin:20px 0 8px;color:var(--navy2)}
+.card h4{font-size:.98rem;margin:14px 0 6px}
+.lead{font-size:1.03rem;color:#3f5268}
+.small{font-size:.86rem;color:var(--muted)}
+.kicker{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);font-weight:800;margin-bottom:6px}
+.callout{padding:13px 15px;border-radius:11px;margin:13px 0;border-left:4px solid var(--blue);background:#eef5ff}
+.callout.good{border-color:var(--green);background:var(--greenbg)}
+.callout.warn{border-color:#d18a18;background:var(--amberbg)}
+.callout.danger{border-color:var(--red);background:var(--redbg)}
+.callout strong{color:var(--navy)}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.76rem;font-weight:800;background:#e9f1ff;color:#164da1}
+.pill.green{background:var(--greenbg);color:var(--green)}
+.pill.amber{background:var(--amberbg);color:var(--amber)}
+.pill.red{background:var(--redbg);color:var(--red)}
+.student-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.field label{display:block;font-weight:750;font-size:.84rem;margin:0 0 5px;color:#30445c}
+.field input,.field select,.field textarea{width:100%;border:1px solid #cbd7e4;border-radius:9px;padding:10px 11px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid #2563eb22;border-color:#4c83d5}
+.field textarea{min-height:88px;resize:vertical}
+.auto-field{background:#f1f5f9!important;color:#52647a!important}
+.buttonrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:800;background:var(--blue);color:#fff}
+.btn:hover{filter:brightness(.94)}
+.btn.secondary{background:#eaf0f7;color:#203a56;border:1px solid #d5e0eb}
+.btn.dark{background:var(--navy)}
+.btn.green{background:var(--green)}
+.btn.smallbtn{padding:6px 10px;font-size:.82rem}
+.progress-wrap{margin-top:15px}
+.progress-meta{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;font-weight:750}
+.progress{height:10px;background:#e7edf4;border-radius:999px;overflow:hidden;margin-top:7px}
+.progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#16834a,#25ae76);transition:width .2s}
+.flow{display:flex;align-items:stretch;gap:8px;margin:15px 0;flex-wrap:wrap}
+.flowbox{flex:1 1 145px;border:1px solid var(--line);border-radius:12px;padding:13px;background:#f8fbfe;text-align:center}
+.flowbox .symbol{font-size:1.45rem;margin-bottom:4px}
+.flowbox strong{display:block;color:var(--navy)}
+.flowbox span{font-size:.8rem;color:var(--muted)}
+.arrow{align-self:center;color:#8092a7;font-size:1.3rem;font-weight:900}
+.twoflows{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.flowpanel{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfdff}
+.flowpanel h3{margin:0 0 8px}
+.keygrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.keybox{border-radius:11px;padding:13px;background:#eef5ff;border:1px solid #d8e6fb}
+.keybox.private{background:#fff5df;border-color:#f2dfb4}
+.keybox strong{display:block}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.91rem}
+th,td{border:1px solid var(--line);padding:10px 11px;text-align:left;vertical-align:top}
+th{background:#edf3f9;color:#233b56}
+tr:nth-child(even) td{background:#fbfcfe}
+.codewrap{position:relative;margin:10px 0}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#101d2d;color:#e3edf8;border-radius:10px;padding:15px 15px 16px;font: .88rem/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;margin:0}
+.copybtn{position:absolute;right:8px;top:8px;border:1px solid #7890aa;background:#243950;color:#fff;border-radius:6px;padding:4px 8px;font-size:.75rem}
+.step{border:1px solid var(--line);border-radius:12px;padding:15px;margin:12px 0;background:#fff}
+.stephead{display:flex;gap:11px;align-items:flex-start}
+.stepnum{width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#e7f0ff;color:#1455ad;display:grid;place-items:center;font-weight:900}
+.step h4{margin:1px 0 5px}
+.taskcheck{display:flex;gap:9px;align-items:flex-start;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:.9rem}
+.taskcheck input{margin-top:4px;accent-color:var(--green);width:17px;height:17px}
+.toolcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.toolcard{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfdff}
+.toolcard h3{margin:0 0 5px}
+.toolcard p{font-size:.86rem;color:var(--muted);min-height:50px}
+.toolcard a{font-weight:800}
+details{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:10px 0;background:#fcfdff}
+summary{font-weight:800;cursor:pointer;color:#213c58}
+details[open] summary{margin-bottom:9px}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checkitem{display:flex;gap:9px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fbfdff}
+.checkitem input{accent-color:var(--green);margin-top:4px}
+.quizq{border:1px solid var(--line);border-radius:11px;padding:14px;margin:12px 0}
+.quizq p{font-weight:800;margin:0 0 9px}
+.option{display:block;padding:6px 8px;border-radius:7px;margin:3px 0;cursor:pointer}
+.option:hover{background:#f0f5fa}
+.option input{margin-right:7px;accent-color:var(--blue)}
+.feedback{font-size:.85rem;margin-top:7px;font-weight:700}
+.resultbox{display:none;padding:14px;border-radius:10px;background:#eaf7ef;border:1px solid #bfe4ca;margin-top:12px}
+.footer{background:#10243a;color:#d9e7f3;padding:25px 0;font-size:.85rem}
+.footer a{color:#9dd5f0}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.badge-row{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
+.note{font-size:.84rem;color:var(--muted)}
+.two-col-list{columns:2;column-gap:28px}
+.two-col-list li{break-inside:avoid;margin-bottom:5px}
+@media(max-width:850px){
+ .student-grid{grid-template-columns:1fr 1fr}
+ .toolcards{grid-template-columns:1fr}
+ .twoflows{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+ .container{width:min(100% - 20px,1180px)}
+ .card{padding:16px}
+ .grid,.student-grid,.keygrid,.checklist{grid-template-columns:1fr}
+ .arrow{transform:rotate(90deg);text-align:center}
+ .two-col-list{columns:1}
+ .hero{padding:29px 0}
+}
+@media print{
+ .topnav,.buttonrow,.copybtn,.no-print{display:none!important}
+ body{background:#fff;font-size:11pt}
+ .card{box-shadow:none;break-inside:avoid}
+ .hero{background:#fff;color:#000;padding:15px 0}
+ .hero p,.hero .eyebrow,.tag{color:#333}
+ .tag{border-color:#aaa}
+ a{color:#000;text-decoration:underline}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow">Modul praktikum · Keamanan Komputer dan Jaringan</div>
+    <h1>RSA Digital Signature &amp; Encryption</h1>
+    <p>Modul interaktif untuk mempraktikkan pembuatan kunci RSA, tanda tangan digital, verifikasi signature, enkripsi, dekripsi, dan pengujian perubahan pesan menggunakan TEDI, CyberChef, serta OpenSSL.</p>
+    <div class="hero-tags">
+      <span class="tag">RSA 2048-bit</span><span class="tag">SHA-256</span><span class="tag">RSA-PSS</span><span class="tag">RSA-OAEP</span><span class="tag">Level: Mahasiswa Komputer</span>
+    </div>
+  </div>
+</header>
+
+<div class="topnav no-print">
+  <div class="container navinner">
+    <a href="#identitas">Identitas</a><a href="#capaian">Capaian</a><a href="#konsep">Konsep</a><a href="#persiapan">Persiapan</a>
+    <a href="#tedi">Praktik TEDI</a><a href="#cyberchef">CyberChef</a><a href="#openssl">OpenSSL</a>
+    <a href="#analisis">Analisis</a><a href="#kuis">Kuis</a><a href="#laporan">Laporan</a>
+  </div>
+</div>
+
+<main class="container">
+  <section class="card" id="identitas">
+    <div class="kicker">Bagian 00 · Identitas praktikan</div>
+    <h2>Identitas Mahasiswa</h2>
+    <p class="small">Isi identitas sebelum memulai. Tanggal dan waktu pengerjaan ditampilkan otomatis menggunakan zona waktu WIB (Asia/Jakarta).</p>
+    <div class="student-grid">
+      <div class="field"><label for="studentName">Nama lengkap</label><input id="studentName" type="text" placeholder="Masukkan nama mahasiswa"></div>
+      <div class="field"><label for="npm">NPM</label><input id="npm" type="text" placeholder="Masukkan NPM"></div>
+      <div class="field"><label for="group">Kelompok</label><input id="group" type="text" placeholder="Masukkan kelompok"></div>
+      <div class="field"><label for="className">Kelas (opsional)</label><input id="className" type="text" placeholder="Masukkan kelas"></div>
+      <div class="field"><label for="datetime">Tanggal dan waktu pengerjaan (WIB)</label><input id="datetime" class="auto-field" type="text" readonly></div>
+      <div class="field"><label for="lecturer">Dosen / instruktur (opsional)</label><input id="lecturer" type="text" placeholder="Nama dosen / instruktur"></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>Progres checklist praktikum</span><span id="progressText">0 dari 20 kegiatan (0%)</span></div>
+      <div class="progress"><span id="progressBar"></span></div>
+    </div>
+  </section>
+
+  <section class="card" id="capaian">
+    <div class="kicker">Bagian 01 · Orientasi</div>
+    <h2>Capaian Pembelajaran Praktikum</h2>
+    <p>Setelah menyelesaikan kegiatan ini, mahasiswa diharapkan mampu:</p>
+    <ol>
+      <li>Menjelaskan konsep kriptografi asimetris dan pasangan public key–private key.</li>
+      <li>Membedakan digital signature dari enkripsi berdasarkan tujuan, alur, dan penggunaan kuncinya.</li>
+      <li>Membuat pasangan kunci RSA untuk kebutuhan tanda tangan digital dan enkripsi.</li>
+      <li>Melakukan signing menggunakan private key dan verification menggunakan public key.</li>
+      <li>Menguji integritas pesan dengan mengubah isi pesan setelah proses signing.</li>
+      <li>Melakukan enkripsi dengan public key penerima dan dekripsi dengan private key penerima.</li>
+      <li>Menganalisis kegagalan verifikasi atau dekripsi berdasarkan perubahan pesan, kunci, format, dan parameter.</li>
+      <li>Menghubungkan hasil praktikum dengan Confidentiality, Integrity, dan Authenticity.</li>
+    </ol>
+    <div class="callout good"><strong>Fokus utama:</strong> RSA Sign/Verify digunakan untuk mempelajari digital signature. RSA Encrypt/Decrypt digunakan untuk mempelajari kerahasiaan pesan. Keduanya tidak boleh dianggap sebagai proses yang sama.</div>
+  </section>
+
+  <section class="card" id="konsep">
+    <div class="kicker">Bagian 02 · Landasan teori</div>
+    <h2>Konsep Dasar yang Harus Dipahami</h2>
+    <h3>2.1 Kriptografi asimetris</h3>
+    <p>Kriptografi asimetris menggunakan sepasang kunci yang saling berhubungan secara matematis, yaitu <strong>public key</strong> dan <strong>private key</strong>.</p>
+    <div class="keygrid">
+      <div class="keybox">
+        <strong>Public Key</strong>
+        <p class="small">Dapat dibagikan. Digunakan untuk memverifikasi signature atau mengenkripsi pesan kepada pemilik pasangan kunci.</p>
+      </div>
+      <div class="keybox private">
+        <strong>Private Key</strong>
+        <p class="small">Harus dirahasiakan. Digunakan untuk membuat signature atau mendekripsi pesan yang ditujukan kepada pemilik kunci.</p>
+      </div>
+    </div>
+    <h3>2.2 Empat operasi RSA</h3>
+    <table>
+      <thead><tr><th>Operasi</th><th>Kunci yang digunakan</th><th>Tujuan</th><th>Hasil</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RSA Sign</strong></td><td>Private key penandatangan</td><td>Digital signature</td><td>Signature</td></tr>
+        <tr><td><strong>RSA Verify</strong></td><td>Public key penandatangan</td><td>Memeriksa signature</td><td>Valid / tidak valid</td></tr>
+        <tr><td><strong>RSA Encrypt</strong></td><td>Public key penerima</td><td>Confidentiality</td><td>Ciphertext</td></tr>
+        <tr><td><strong>RSA Decrypt</strong></td><td>Private key penerima</td><td>Membuka ciphertext</td><td>Plaintext</td></tr>
+      </tbody>
+    </table>
+
+    <div class="twoflows">
+      <div class="flowpanel">
+        <h3>Alur A · Digital Signature</h3>
+        <div class="flow">
+          <div class="flowbox"><div class="symbol">📝</div><strong>Pesan</strong><span>Andi menyiapkan dokumen</span></div>
+          <div class="arrow">→</div>
+          <div class="flowbox"><div class="symbol">🔏</div><strong>Sign</strong><span>Private key Andi</span></div>
+          <div class="arrow">→</div>
+          <div class="flowbox"><div class="symbol">✍️</div><strong>Signature</strong><span>Dikirim bersama pesan</span></div>
+        </div>
+        <div class="callout"><strong>Verifikasi:</strong> Budi menggunakan public key Andi untuk memeriksa signature terhadap pesan yang diterima.</div>
+        <p class="small"><strong>Tujuan:</strong> memeriksa integritas pesan dan membuktikan bahwa signature dibuat menggunakan private key yang berpasangan dengan public key tersebut.</p>
+      </div>
+      <div class="flowpanel">
+        <h3>Alur B · Enkripsi</h3>
+        <div class="flow">
+          <div class="flowbox"><div class="symbol">📝</div><strong>Pesan</strong><span>Andi menyiapkan pesan rahasia</span></div>
+          <div class="arrow">→</div>
+          <div class="flowbox"><div class="symbol">🔒</div><strong>Encrypt</strong><span>Public key Budi</span></div>
+          <div class="arrow">→</div>
+          <div class="flowbox"><div class="symbol">📦</div><strong>Ciphertext</strong><span>Dikirim kepada Budi</span></div>
+        </div>
+        <div class="callout good"><strong>Dekripsi:</strong> Budi menggunakan private key miliknya untuk mengembalikan ciphertext menjadi pesan asli.</div>
+        <p class="small"><strong>Tujuan:</strong> menjaga kerahasiaan pesan agar hanya pemilik private key yang sesuai yang dapat mendekripsinya.</p>
+      </div>
+    </div>
+
+    <h3>2.3 Mengapa identitas penandatangan perlu diverifikasi?</h3>
+    <p>Keberhasilan RSA Verify menunjukkan bahwa signature cocok dengan pesan dan public key yang digunakan. Namun, hal itu belum otomatis membuktikan identitas orang di balik public key. Untuk mengaitkan public key dengan identitas tertentu, penerima harus memastikan kepemilikan kunci melalui sertifikat digital, fingerprint yang diverifikasi, atau mekanisme kepercayaan lain.</p>
+
+    <h3>2.4 Algoritma dan parameter yang digunakan</h3>
+    <table>
+      <thead><tr><th>Komponen</th><th>Penggunaan dalam modul</th><th>Penjelasan</th></tr></thead>
+      <tbody>
+        <tr><td>RSA 2048-bit</td><td>Pasangan kunci</td><td>Ukuran kunci untuk eksperimen pembelajaran.</td></tr>
+        <tr><td>SHA-256</td><td>Digital signature</td><td>Fungsi hash yang menghasilkan digest 256-bit.</td></tr>
+        <tr><td>RSA-PSS</td><td>Signing / verification</td><td>Skema padding modern untuk tanda tangan RSA.</td></tr>
+        <tr><td>RSA-OAEP</td><td>Encryption / decryption</td><td>Skema padding yang direkomendasikan untuk enkripsi RSA.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><strong>Catatan parameter:</strong> parameter signing harus sama pada saat verification. Parameter enkripsi harus sama pada saat dekripsi, termasuk skema OAEP dan pilihan hash/MGF bila tool menampilkannya. Jangan mencampur RSA-PSS dengan RSA-OAEP: PSS untuk signature, OAEP untuk encryption.</div>
+  </section>
+
+  <section class="card" id="persiapan">
+    <div class="kicker">Bagian 03 · Persiapan</div>
+    <h2>Peralatan dan Aturan Praktikum</h2>
+    <div class="toolcards">
+      <div class="toolcard"><h3>TEDI Software</h3><p>Tool utama untuk generate keypair, signing/verifying, serta encrypt/decrypt melalui antarmuka web.</p><a href="https://tedi-software.github.io/" target="_blank" rel="noopener">Buka TEDI ↗</a></div>
+      <div class="toolcard"><h3>CyberChef</h3><p>Tool alternatif untuk mengenali operasi RSA sebagai recipe yang dapat disusun dan dijalankan.</p><a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">Buka CyberChef ↗</a></div>
+      <div class="toolcard"><h3>OpenSSL</h3><p>Tool command line untuk mengulang proses pembuatan kunci, signing, verification, encryption, dan decryption.</p><a href="https://www.openssl.org/" target="_blank" rel="noopener">Situs OpenSSL ↗</a></div>
+    </div>
+    <h3>Checklist sebelum mulai</h3>
+    <div class="checklist">
+      <label class="checkitem"><input type="checkbox" class="task-check"> Laptop dan browser siap digunakan.</label>
+      <label class="checkitem"><input type="checkbox" class="task-check"> Koneksi internet tersedia untuk membuka tool.</label>
+      <label class="checkitem"><input type="checkbox" class="task-check"> Identitas mahasiswa sudah diisi.</label>
+      <label class="checkitem"><input type="checkbox" class="task-check"> Memahami perbedaan public dan private key.</label>
+    </div>
+    <div class="callout danger"><strong>Aturan keamanan:</strong> gunakan pesan dan kunci khusus praktikum. Jangan memakai private key pribadi, kunci produksi, kata sandi, atau dokumen rahasia. Walaupun TEDI dan CyberChef menyatakan pemrosesan dilakukan di browser, praktikum ini tetap hanya menggunakan data simulasi.</div>
+  </section>
+
+  <section class="card" id="tedi">
+    <div class="kicker">Bagian 04 · Praktik utama</div>
+    <h2>Praktikum Menggunakan TEDI Software</h2>
+    <p>TEDI menyediakan halaman terpisah untuk Keypair Generation, Signing and Verifying, serta Encryption and Decryption. Ikuti urutan berikut agar kunci dan data yang digunakan tidak tertukar.</p>
+
+    <h3>Eksperimen A · Membuat pasangan kunci RSA</h3>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">1</span><div><h4>Buka Keypair Generator</h4><p>Buka <a href="https://tedi-software.github.io/how-to/keypair-generator" target="_blank" rel="noopener">TEDI — Keypair Generation</a>.</p></div></div>
+      <ul><li>Pilih algoritma <strong>RSA</strong>.</li><li>Pilih ukuran kunci <strong>2048 bit</strong> untuk eksperimen ini.</li><li>Klik <strong>Generate Keypair</strong>.</li><li>Amati Public Key (PEM) dan Private Key (PEM) yang dihasilkan.</li></ul>
+      <div class="callout"><strong>Catat kepemilikan kunci:</strong> untuk eksperimen enkripsi, pasangan ini dianggap milik Budi. Untuk eksperimen signature, buat atau gunakan pasangan lain yang dianggap milik Andi.</div>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya berhasil menghasilkan pasangan RSA dan memahami fungsi kedua kunci.</label>
+    </div>
+
+    <h3>Eksperimen B · Digital Signature: Andi menandatangani pesan</h3>
+    <p>Dalam eksperimen ini, Andi adalah penandatangan. Budi bertindak sebagai penerima yang akan memverifikasi signature.</p>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">2</span><div><h4>Siapkan pasangan kunci Andi</h4><p>Gunakan pasangan RSA tersendiri dan beri label <code>private_andi</code> serta <code>public_andi</code>. Private key Andi tidak diberikan kepada Budi.</p></div></div>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Pasangan kunci Andi sudah tersedia dan diberi label dengan benar.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">3</span><div><h4>Buka halaman Signing and Verifying</h4><p>Buka <a href="https://tedi-software.github.io/how-to/signing" target="_blank" rel="noopener">TEDI — Signing and Verifying</a>.</p></div></div>
+      <ul><li>Pilih Operation <strong>Sign</strong>.</li><li>Pilih Algorithm <strong>RSA-PSS</strong>.</li><li>Masukkan pesan praktikum di kolom Message.</li><li>Masukkan <strong>Private Key Andi</strong> pada kolom Private Key (PEM).</li><li>Jalankan <strong>Run Sign/Verify</strong>.</li><li>Salin signature yang dihasilkan (Base64) dan simpan sementara.</li></ul>
+      <div class="callout warn"><strong>Perhatikan:</strong> signature bukan ciphertext. Signature tidak dimaksudkan untuk menyembunyikan isi pesan. Pesan asli tetap dapat dibaca oleh penerima.</div>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya berhasil melakukan Sign menggunakan private key Andi.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">4</span><div><h4>Budi melakukan Verify</h4><p>Masih pada halaman yang sama:</p></div></div>
+      <ul><li>Ubah Operation menjadi <strong>Verify</strong>.</li><li>Masukkan pesan asli yang sama persis.</li><li>Masukkan signature hasil langkah sebelumnya.</li><li>Masukkan <strong>Public Key Andi</strong>.</li><li>Pilih RSA-PSS dan jalankan proses verifikasi.</li></ul>
+      <p><span class="pill green">Hasil yang diharapkan</span> Signature dinyatakan valid / verification berhasil.</p>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya berhasil memverifikasi signature pesan asli.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">5</span><div><h4>Uji integritas: ubah pesan</h4><p>Ubah satu kata atau satu karakter dari pesan asli. Jangan membuat signature baru. Gunakan signature lama dan Public Key Andi yang sama, lalu lakukan Verify kembali.</p></div></div>
+      <p><span class="pill red">Hasil yang diharapkan</span> Signature tidak valid / verification gagal.</p>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya menguji pesan yang diubah dan memperoleh hasil verifikasi gagal.</label>
+    </div>
+
+    <h3>Eksperimen C · Encryption: Andi mengirim pesan rahasia kepada Budi</h3>
+    <div class="callout good"><strong>Peran kunci:</strong> Budi membuat pasangan kunci. Andi menerima Public Key Budi. Andi mengenkripsi pesan menggunakan Public Key Budi. Budi mendekripsi menggunakan Private Key Budi.</div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">6</span><div><h4>Siapkan pasangan kunci Budi</h4><p>Gunakan pasangan RSA milik Budi dari Eksperimen A. Pastikan Public Key dan Private Key berasal dari proses generate yang sama.</p></div></div>
+      <ul><li>Public Key Budi boleh diberikan kepada Andi.</li><li>Private Key Budi tetap disimpan oleh Budi.</li></ul>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Public Key Budi sudah disiapkan untuk Andi dan Private Key tetap disimpan Budi.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">7</span><div><h4>Andi melakukan Encrypt</h4><p>Buka <a href="https://tedi-software.github.io/how-to/encryption" target="_blank" rel="noopener">TEDI — Encryption and Decryption</a>.</p></div></div>
+      <ul><li>Pilih Operation <strong>Encrypt</strong>.</li><li>Pilih Mode <strong>Asymmetric (RSA)</strong>.</li><li>Gunakan algoritma <strong>RSA-OAEP</strong>.</li><li>Masukkan pesan singkat pada Input.</li><li>Masukkan <strong>Public Key Budi</strong>.</li><li>Pilih Output Encoding, misalnya <strong>Base64</strong> atau Hex.</li><li>Klik <strong>Run Encryption/Decryption</strong>.</li><li>Salin seluruh ciphertext yang dihasilkan tanpa mengubah karakter.</li></ul>
+      <div class="callout warn"><strong>Gunakan pesan pendek.</strong> RSA bukan metode yang efisien untuk mengenkripsi data berukuran besar secara langsung. Untuk eksperimen RSA 2048-bit, gunakan pesan singkat. Sistem nyata biasanya memakai enkripsi hybrid: RSA melindungi kunci simetris, sedangkan AES mengenkripsi data.</div>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya berhasil mengenkripsi pesan menggunakan Public Key Budi.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">8</span><div><h4>Budi melakukan Decrypt</h4><p>Masih pada halaman TEDI Encryption and Decryption:</p></div></div>
+      <ul><li>Pilih Operation <strong>Decrypt</strong>.</li><li>Pilih Mode <strong>Asymmetric (RSA)</strong> dan algoritma RSA-OAEP.</li><li>Masukkan ciphertext hasil Encrypt.</li><li>Masukkan <strong>Private Key Budi</strong>.</li><li>Pastikan encoding input sesuai dengan format ciphertext yang disalin.</li><li>Klik <strong>Run Encryption/Decryption</strong>.</li></ul>
+      <p><span class="pill green">Hasil yang diharapkan</span> Pesan asli kembali terbaca.</p>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya berhasil mendekripsi ciphertext menggunakan Private Key Budi.</label>
+    </div>
+    <div class="step">
+      <div class="stephead"><span class="stepnum">9</span><div><h4>Uji private key yang berbeda</h4><p>Buat pasangan RSA kedua. Coba dekripsi ciphertext Budi menggunakan private key dari pasangan kedua.</p></div></div>
+      <p><span class="pill red">Hasil yang diharapkan</span> Dekripsi gagal atau menghasilkan data yang tidak valid.</p>
+      <label class="taskcheck"><input type="checkbox" class="task-check"> Saya menguji dekripsi menggunakan private key yang bukan pasangannya.</label>
+    </div>
+    <div class="callout danger"><strong>Jangan tertukar:</strong> pada signature, Andi menggunakan private key Andi dan Budi memverifikasi dengan public key Andi. Pada enkripsi, Andi menggunakan public key Budi dan Budi mendekripsi dengan private key Budi.</div>
+  </section>
+
+  <section class="card" id="cyberchef">
+    <div class="kicker">Bagian 05 · Alternatif dan eksplorasi</div>
+    <h2>Praktikum Menggunakan CyberChef</h2>
+    <p>CyberChef menggunakan konsep Input, Recipe, Operations, dan Output. Cari nama operasi pada kolom Operations, tarik ke Recipe, isi parameter, lalu jalankan Bake atau aktifkan Auto Bake.</p>
+    <p><a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener"><strong>Buka CyberChef — GCHQ ↗</strong></a></p>
+    <h3>5.1 Generate RSA Key Pair</h3>
+    <ol><li>Cari <code>Generate RSA Key Pair</code>.</li><li>Tambahkan ke Recipe.</li><li>Pilih ukuran 2048 bit jika opsi tersedia.</li><li>Jalankan dan simpan hasil public key serta private key untuk eksperimen.</li></ol>
+    <h3>5.2 RSA Sign</h3>
+    <ol><li>Masukkan pesan asli pada Input.</li><li>Tambahkan operasi <code>RSA Sign</code>.</li><li>Masukkan private key penandatangan.</li><li>Pilih digest <strong>SHA-256</strong>.</li><li>Jalankan recipe dan simpan signature.</li></ol>
+    <h3>5.3 RSA Verify</h3>
+    <ol><li>Gunakan signature hasil RSA Sign sebagai data Input operasi Verify.</li><li>Tambahkan <code>RSA Verify</code>.</li><li>Masukkan public key penandatangan.</li><li>Isi parameter Message dengan pesan asli, Message format <strong>Raw</strong>, dan digest <strong>SHA-256</strong>.</li><li>Jalankan operasi. Jika signature dan pesan cocok, hasil verifikasi menyatakan valid.</li><li>Ulangi dengan pesan yang sudah diubah, tetapi jangan membuat signature baru.</li></ol>
+    <div class="callout warn"><strong>Catatan RSA Verify:</strong> pada operasi CyberChef, data Input digunakan sebagai signature, sedangkan pesan yang akan diperiksa diisikan pada parameter Message. Perhatikan posisi input dan parameter pada tampilan operasi.</div>
+    <h3>5.4 RSA Encrypt dan RSA Decrypt</h3>
+    <ol><li>Masukkan pesan pendek pada Input.</li><li>Tambahkan <code>RSA Encrypt</code>, masukkan public key penerima, pilih <strong>RSA-OAEP</strong>, lalu pilih digest.</li><li>Jalankan dan simpan ciphertext. Bila perlu, tambahkan <code>To Base64</code> setelah RSA Encrypt agar ciphertext mudah disalin sebagai teks.</li><li>Untuk dekripsi, masukkan ciphertext Base64 sebagai Input, tambahkan <code>From Base64</code> terlebih dahulu, kemudian <code>RSA Decrypt</code>.</li><li>Masukkan private key penerima. Pilih skema OAEP dan digest yang sama seperti saat Encrypt.</li><li>Jalankan dan periksa apakah pesan asli kembali terbaca.</li></ol>
+    <div class="callout"><strong>Keselarasan parameter:</strong> CyberChef dapat menampilkan pilihan digest pada RSA-OAEP. Pastikan nilai digest saat Encrypt dan Decrypt sama. Jangan menganggap default SHA-1 dan SHA-256 saling kompatibel.</div>
+    <label class="taskcheck"><input type="checkbox" class="task-check"> Saya mencoba minimal satu operasi RSA di CyberChef dan mencatat perbedaannya dengan TEDI.</label>
+  </section>
+
+  <section class="card" id="openssl">
+    <div class="kicker">Bagian 06 · Pengayaan command line</div>
+    <h2>Pengayaan Menggunakan OpenSSL</h2>
+    <p>Bagian ini mengulang prinsip yang sama melalui terminal. Jalankan pada folder praktikum. Perintah berikut ditujukan untuk OpenSSL modern; periksa versi dengan <code>openssl version</code>.</p>
+    <h3>6.1 Membuat pasangan kunci RSA</h3>
+    <div class="codewrap"><button class="copybtn" onclick="copyCode(this)">Salin</button><pre>openssl genpkey -algorithm RSA -out private_andi.pem -pkeyopt rsa_keygen_bits:2048
+openssl pkey -in private_andi.pem -pubout -out public_andi.pem</pre></div>
+    <p class="small">Untuk pasangan Budi, ulangi perintah dengan nama file <code>private_budi.pem</code> dan <code>public_budi.pem</code>.</p>
+    <h3>6.2 Digital Signature: Sign dan Verify</h3>
+    <div class="codewrap"><button class="copybtn" onclick="copyCode(this)">Salin</button><pre>openssl dgst -sha256 -sign private_andi.pem -out signature.bin pesan.txt
+openssl dgst -sha256 -verify public_andi.pem -signature signature.bin pesan.txt</pre></div>
+    <p>Hasil pesan asli yang benar diharapkan menampilkan <code>Verified OK</code>. Setelah isi <code>pesan.txt</code> diubah, verifikasi dengan signature lama seharusnya gagal.</p>
+    <h3>6.3 RSA Encryption: Encrypt dan Decrypt</h3>
+    <p>Buat file <code>pesan_pendek.txt</code> yang berisi pesan singkat. RSA-OAEP digunakan dengan SHA-256 dan MGF1-SHA-256.</p>
+    <div class="codewrap"><button class="copybtn" onclick="copyCode(this)">Salin</button><pre>openssl pkeyutl -encrypt -pubin -inkey public_budi.pem -in pesan_pendek.txt -out ciphertext.bin -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha256
+
+openssl pkeyutl -decrypt -inkey private_budi.pem -in ciphertext.bin -out hasil_dekripsi.txt -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha256</pre></div>
+    <p>Periksa isi file hasil dekripsi, misalnya dengan <code>cat hasil_dekripsi.txt</code> pada Linux/macOS atau <code>Get-Content hasil_dekripsi.txt</code> pada PowerShell.</p>
+    <div class="callout warn"><strong>Perhatian:</strong> RSA-OAEP memiliki batas ukuran plaintext. Pada RSA 2048-bit dengan OAEP-SHA-256, batas teoritis satu blok adalah 190 byte. Untuk data besar, gunakan pendekatan hybrid encryption, bukan RSA langsung.</div>
+    <label class="taskcheck"><input type="checkbox" class="task-check"> Saya memahami atau mencoba minimal satu perintah OpenSSL pada lingkungan praktikum.</label>
+  </section>
+
+  <section class="card" id="troubleshoot">
+    <div class="kicker">Bagian 07 · Pemecahan masalah</div>
+    <h2>Kesalahan Umum dan Cara Mengatasinya</h2>
+    <details><summary>Verification failure saat pesan terlihat sama</summary><ul><li>Pastikan tidak ada spasi, baris baru, atau karakter tambahan yang berubah.</li><li>Pastikan signature berasal dari pesan yang sama persis.</li><li>Pastikan public key adalah pasangan private key yang dipakai untuk Sign.</li><li>Pastikan algoritma signature dan digest sama.</li></ul></details>
+    <details><summary>Wrong key atau signature tidak valid</summary><ul><li>Periksa apakah public key berasal dari private key penandatangan yang benar.</li><li>Jangan menggunakan public key penerima untuk memverifikasi signature penandatangan.</li><li>Jangan membuat signature baru ketika sedang menguji pesan yang dimodifikasi.</li></ul></details>
+    <details><summary>Error: wrong ctext length pada RSA Decrypt</summary><ul><li>Salin ciphertext secara utuh, jangan sampai terpotong.</li><li>Pastikan format output dan input sama, misalnya Base64 tetap diperlakukan sebagai Base64.</li><li>Jangan menambahkan spasi, tanda kutip, atau karakter lain pada ciphertext.</li><li>Pastikan ciphertext berasal dari proses Encrypt dengan pasangan public/private key yang sesuai.</li><li>Samakan mode RSA-OAEP dan digest pada proses Encrypt serta Decrypt.</li><li>Jika tool menggunakan encoding Hex, jangan memasukkannya sebagai Base64, dan sebaliknya.</li></ul></details>
+    <details><summary>Decryption gagal dengan private key yang benar</summary><ul><li>Periksa apakah private key merupakan pasangan dari public key yang digunakan saat Encrypt.</li><li>Pastikan skema padding dan hash OAEP sama.</li><li>Pastikan pesan tidak melampaui batas ukuran RSA.</li><li>Untuk CyberChef, periksa apakah perlu menggunakan From Base64 sebelum RSA Decrypt.</li></ul></details>
+    <details><summary>Pesan terlalu panjang untuk RSA</summary><p>RSA dirancang untuk data berukuran terbatas. Gunakan pesan pendek untuk demonstrasi. Untuk aplikasi nyata, gunakan hybrid encryption: buat kunci AES acak, enkripsi data dengan AES, lalu lindungi kunci AES menggunakan public key RSA penerima.</p></details>
+  </section>
+
+  <section class="card" id="analisis">
+    <div class="kicker">Bagian 08 · Pencatatan hasil</div>
+    <h2>Hasil Pengamatan dan Analisis Mahasiswa</h2>
+    <p>Isi hasil sesuai eksperimen yang benar-benar dilakukan. Jangan mengisi berdasarkan hasil yang diharapkan apabila pengujian belum dijalankan.</p>
+    <div class="grid">
+      <div class="field"><label for="signOriginal">Verifikasi pesan asli</label><select id="signOriginal"><option value="Belum diuji">Belum diuji</option><option>Valid / berhasil</option><option>Tidak valid / gagal</option></select></div>
+      <div class="field"><label for="signModified">Verifikasi pesan dimodifikasi</label><select id="signModified"><option value="Belum diuji">Belum diuji</option><option>Valid / berhasil</option><option>Tidak valid / gagal</option></select></div>
+      <div class="field"><label for="decryptCorrect">Decrypt dengan private key pasangan</label><select id="decryptCorrect"><option value="Belum diuji">Belum diuji</option><option>Berhasil</option><option>Gagal</option></select></div>
+      <div class="field"><label for="decryptWrong">Decrypt dengan private key berbeda</label><select id="decryptWrong"><option value="Belum diuji">Belum diuji</option><option>Gagal / tidak valid</option><option>Berhasil</option></select></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label for="observation">Catatan hasil pengamatan (tool, pesan uji, parameter, dan kendala)</label><textarea id="observation" placeholder="Tuliskan hasil aktual dari praktik TEDI, CyberChef, atau OpenSSL..."></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="analysisAnswer">Analisis singkat: mengapa verification gagal setelah pesan diubah?</label><textarea id="analysisAnswer" placeholder="Jelaskan hubungan pesan, hash, signature, dan public key..."></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="differenceAnswer">Analisis singkat: apa perbedaan RSA Sign/Verify dengan RSA Encrypt/Decrypt?</label><textarea id="differenceAnswer" placeholder="Jelaskan tujuan keamanan dan pasangan kunci yang digunakan..."></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="identityAnswer">Analisis singkat: apakah signature valid otomatis membuktikan identitas orang? Jelaskan.</label><textarea id="identityAnswer" placeholder="Jelaskan perlunya verifikasi kepemilikan public key..."></textarea></div>
+    <label class="taskcheck"><input type="checkbox" class="task-check"> Saya sudah mencatat hasil pengujian dan menuliskan analisis berdasarkan hasil praktik.</label>
+  </section>
+
+  <section class="card" id="kuis">
+    <div class="kicker">Bagian 09 · Evaluasi pemahaman</div>
+    <h2>Kuis Praktikum</h2>
+    <p class="small">Pilih satu jawaban terbaik pada setiap soal. Klik Periksa Jawaban untuk memperoleh nilai otomatis. Nilai kuis dihitung dari 10 soal, masing-masing bernilai 10 poin.</p>
+    <div id="quizContainer">
+      <div class="quizq" data-correct="b" data-explain="Private key penandatangan digunakan untuk membuat signature; public key pasangannya digunakan untuk memverifikasi."><p>1. Kunci apa yang digunakan Andi untuk membuat digital signature?</p><label class="option"><input type="radio" name="q1" value="a"> Public key Andi</label><label class="option"><input type="radio" name="q1" value="b"> Private key Andi</label><label class="option"><input type="radio" name="q1" value="c"> Public key Budi</label><label class="option"><input type="radio" name="q1" value="d"> Private key Budi</label></div>
+      <div class="quizq" data-correct="c" data-explain="Penerima memverifikasi signature menggunakan public key milik penandatangan."><p>2. Budi menerima pesan dan signature dari Andi. Kunci untuk Verify adalah...</p><label class="option"><input type="radio" name="q2" value="a"> Private key Budi</label><label class="option"><input type="radio" name="q2" value="b"> Private key Andi</label><label class="option"><input type="radio" name="q2" value="c"> Public key Andi</label><label class="option"><input type="radio" name="q2" value="d"> Public key Budi</label></div>
+      <div class="quizq" data-correct="a" data-explain="Perubahan pesan membuat pesan tidak lagi cocok dengan signature yang dibuat untuk pesan asli."><p>3. Apa yang seharusnya terjadi jika pesan diubah setelah ditandatangani?</p><label class="option"><input type="radio" name="q3" value="a"> Verifikasi gagal</label><label class="option"><input type="radio" name="q3" value="b"> Pesan otomatis diperbaiki</label><label class="option"><input type="radio" name="q3" value="c"> Private key berubah</label><label class="option"><input type="radio" name="q3" value="d"> Pesan menjadi terenkripsi</label></div>
+      <div class="quizq" data-correct="d" data-explain="Andi mengenkripsi menggunakan public key Budi agar hanya pemilik private key Budi yang dapat mendekripsi."><p>4. Andi ingin mengirim pesan rahasia kepada Budi. Kunci untuk Encrypt adalah...</p><label class="option"><input type="radio" name="q4" value="a"> Private key Andi</label><label class="option"><input type="radio" name="q4" value="b"> Public key Andi</label><label class="option"><input type="radio" name="q4" value="c"> Private key Budi</label><label class="option"><input type="radio" name="q4" value="d"> Public key Budi</label></div>
+      <div class="quizq" data-correct="b" data-explain="Budi membuka ciphertext dengan private key yang berpasangan dengan public key yang digunakan saat Encrypt."><p>5. Kunci untuk Decrypt ciphertext yang ditujukan kepada Budi adalah...</p><label class="option"><input type="radio" name="q5" value="a"> Public key Budi</label><label class="option"><input type="radio" name="q5" value="b"> Private key Budi</label><label class="option"><input type="radio" name="q5" value="c"> Public key Andi</label><label class="option"><input type="radio" name="q5" value="d"> Private key Andi</label></div>
+      <div class="quizq" data-correct="c" data-explain="Encryption terutama bertujuan menjaga kerahasiaan isi pesan."><p>6. Tujuan utama RSA Encrypt/Decrypt dalam skenario ini adalah...</p><label class="option"><input type="radio" name="q6" value="a"> Availability</label><label class="option"><input type="radio" name="q6" value="b"> Non-repudiation secara otomatis</label><label class="option"><input type="radio" name="q6" value="c"> Confidentiality</label><label class="option"><input type="radio" name="q6" value="d"> Menghapus pesan</label></div>
+      <div class="quizq" data-correct="a" data-explain="RSA-PSS adalah skema padding yang digunakan untuk tanda tangan digital RSA."><p>7. Skema padding yang direkomendasikan untuk digital signature RSA pada modul ini adalah...</p><label class="option"><input type="radio" name="q7" value="a"> RSA-PSS</label><label class="option"><input type="radio" name="q7" value="b"> RSA-OAEP</label><label class="option"><input type="radio" name="q7" value="c"> AES-CBC</label><label class="option"><input type="radio" name="q7" value="d"> Base64</label></div>
+      <div class="quizq" data-correct="d" data-explain="RSA-OAEP digunakan untuk enkripsi RSA, bukan untuk membuat tanda tangan digital."><p>8. Skema padding yang digunakan untuk RSA encryption pada modul ini adalah...</p><label class="option"><input type="radio" name="q8" value="a"> RSA-PSS</label><label class="option"><input type="radio" name="q8" value="b"> SHA-256</label><label class="option"><input type="radio" name="q8" value="c"> HMAC</label><label class="option"><input type="radio" name="q8" value="d"> RSA-OAEP</label></div>
+      <div class="quizq" data-correct="b" data-explain="Signature valid menunjukkan kecocokan matematis, tetapi identitas pemilik public key tetap perlu dipastikan melalui mekanisme kepercayaan."><p>9. Apakah hasil Verify yang valid otomatis membuktikan identitas seseorang?</p><label class="option"><input type="radio" name="q9" value="a"> Ya, selalu</label><label class="option"><input type="radio" name="q9" value="b"> Tidak, kepemilikan public key harus dipercaya/diverifikasi</label><label class="option"><input type="radio" name="q9" value="c"> Ya, jika pesan panjang</label><label class="option"><input type="radio" name="q9" value="d"> Tidak, karena RSA tidak memakai kunci</label></div>
+      <div class="quizq" data-correct="c" data-explain="RSA memiliki batas ukuran pesan; untuk data besar digunakan enkripsi hybrid dengan algoritma simetris seperti AES."><p>10. Mengapa RSA tidak ideal untuk mengenkripsi file besar secara langsung?</p><label class="option"><input type="radio" name="q10" value="a"> RSA tidak menggunakan public key</label><label class="option"><input type="radio" name="q10" value="b"> RSA hanya dapat mengenkripsi angka</label><label class="option"><input type="radio" name="q10" value="c"> RSA memiliki batas ukuran plaintext dan lebih lambat untuk data besar</label><label class="option"><input type="radio" name="q10" value="d"> RSA selalu menghasilkan plaintext</label></div>
+    </div>
+    <div class="buttonrow"><button class="btn" onclick="gradeQuiz()">Periksa Jawaban</button><button class="btn secondary" onclick="resetQuiz()">Ulangi Kuis</button></div>
+    <div class="resultbox" id="quizResult" aria-live="polite"></div>
+  </section>
+
+  <section class="card" id="laporan">
+    <div class="kicker">Bagian 10 · Pengumpulan</div>
+    <h2>Kesimpulan dan Unduh Laporan Praktikum</h2>
+    <h3>Kesimpulan yang harus dipahami</h3>
+    <ul>
+      <li>Digital signature menggunakan private key penandatangan untuk Sign dan public key penandatangan untuk Verify.</li>
+      <li>Perubahan pesan setelah signing menyebabkan signature tidak lagi cocok sehingga verifikasi gagal.</li>
+      <li>Enkripsi RSA menggunakan public key penerima, sedangkan dekripsi menggunakan private key penerima.</li>
+      <li>Digital signature berhubungan dengan authenticity dan integrity; encryption berhubungan dengan confidentiality.</li>
+      <li>Signature valid tidak otomatis membuktikan identitas tanpa kepercayaan terhadap public key yang digunakan.</li>
+    </ul>
+    <div class="callout good"><strong>Persyaratan pengumpulan:</strong> isi identitas, selesaikan checklist, isi hasil pengamatan dan analisis, lalu kerjakan kuis. Unduhan TXT akan memuat identitas, tanggal pengerjaan WIB, progres, nilai kuis, hasil pengujian, dan jawaban analisis.</div>
+    <div class="buttonrow">
+      <button class="btn green" onclick="downloadReport()">Unduh Laporan Praktikum (.txt)</button>
+      <button class="btn secondary" onclick="window.print()">Cetak / Simpan PDF</button>
+      <button class="btn dark" onclick="resetAll()">Reset Seluruh Isian</button>
+    </div>
+    <p class="small">Nama file otomatis mengikuti nama mahasiswa, misalnya <code>Laporan_Praktikum_RSA_Andi_Putra.txt</code>. Pastikan browser mengizinkan unduhan file.</p>
+  </section>
+
+  <section class="card">
+    <div class="kicker">Referensi penggunaan tool</div>
+    <h2>Dokumentasi dan Tautan Resmi</h2>
+    <ul>
+      <li><a href="https://tedi-software.github.io/how-to/keypair-generator" target="_blank" rel="noopener">TEDI — Keypair Generation</a></li>
+      <li><a href="https://tedi-software.github.io/how-to/signing" target="_blank" rel="noopener">TEDI — Signing and Verifying</a></li>
+      <li><a href="https://tedi-software.github.io/how-to/encryption" target="_blank" rel="noopener">TEDI — Encryption and Decryption</a></li>
+      <li><a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">CyberChef — GCHQ</a></li>
+      <li><a href="https://github.com/gchq/CyberChef" target="_blank" rel="noopener">CyberChef — Repository dan dokumentasi</a></li>
+      <li><a href="https://www.openssl.org/docs/" target="_blank" rel="noopener">OpenSSL Documentation</a></li>
+    </ul>
+    <p class="note">Modul ini merupakan bahan pembelajaran. Nama menu, pilihan algoritma, dan tampilan tool online dapat berubah mengikuti pembaruan masing-masing penyedia. Ikuti label operasi dan parameter yang tampil pada versi tool saat praktikum.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <strong>Modul Praktikum Keamanan Komputer dan Jaringan</strong><br>
+    Topik: RSA Digital Signature, Verification, Encryption, dan Decryption.<br>
+    <span style="color:#9fb5c9">Gunakan hanya data simulasi dan kunci khusus praktikum.</span>
+  </div>
+</footer>
+
+<script>
+const TOTAL_TASKS = 20;
+let quizScore = null;
+let quizDetails = [];
+
+function updateClock(){
+  const now = new Date();
+  const formatted = new Intl.DateTimeFormat('id-ID',{
+    timeZone:'Asia/Jakarta', day:'2-digit', month:'long', year:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  }).format(now);
+  const el=document.getElementById('datetime');
+  if(el) el.value=formatted+' WIB';
+}
+updateClock();
+setInterval(updateClock,1000);
+
+function updateProgress(){
+  const checks=[...document.querySelectorAll('.task-check')];
+  const done=checks.filter(c=>c.checked).length;
+  const pct=Math.round(done/checks.length*100);
+  document.getElementById('progressText').textContent=`${done} dari ${checks.length} kegiatan (${pct}%)`;
+  document.getElementById('progressBar').style.width=pct+'%';
+}
+document.addEventListener('change',e=>{
+  if(e.target.classList.contains('task-check')) updateProgress();
+});
+updateProgress();
+
+async function copyCode(button){
+  const text=button.parentElement.querySelector('pre').innerText;
+  try{
+    await navigator.clipboard.writeText(text);
+    const old=button.textContent;button.textContent='Tersalin';
+    setTimeout(()=>button.textContent=old,1200);
+  }catch(e){
+    const range=document.createRange();range.selectNode(button.parentElement.querySelector('pre'));
+    const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    button.textContent='Pilih lalu salin';
+  }
+}
+
+function gradeQuiz(){
+  const questions=[...document.querySelectorAll('.quizq')];
+  let correct=0,answered=0;
+  quizDetails=[];
+  questions.forEach((q,i)=>{
+    const selected=q.querySelector('input:checked');
+    const right=q.dataset.correct;
+    const ok=!!selected && selected.value===right;
+    if(selected) answered++;
+    if(ok) correct++;
+    const old=q.querySelector('.feedback');if(old) old.remove();
+    const fb=document.createElement('div');fb.className='feedback';
+    fb.style.color=ok?'#16834a':'#b42318';
+    fb.textContent=(ok?'Benar. ':'Belum tepat. ')+q.dataset.explain;
+    q.appendChild(fb);
+    quizDetails.push({number:i+1,selected:selected?selected.value.toUpperCase():'Tidak dijawab',correct:right.toUpperCase(),status:ok?'Benar':'Salah',explain:q.dataset.explain});
+  });
+  quizScore=Math.round(correct/questions.length*100);
+  const result=document.getElementById('quizResult');
+  result.style.display='block';
+  result.innerHTML=`<strong>Nilai kuis: ${quizScore}/100</strong><br>Jawaban benar: ${correct} dari ${questions.length}. Soal terjawab: ${answered} dari ${questions.length}.<br><span class="small">Nilai ini merupakan nilai kuis otomatis, bukan penilaian keseluruhan laporan praktikum.</span>`;
+  result.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function resetQuiz(){
+  document.querySelectorAll('.quizq input').forEach(i=>i.checked=false);
+  document.querySelectorAll('.quizq .feedback').forEach(f=>f.remove());
+  document.getElementById('quizResult').style.display='none';
+  quizScore=null;quizDetails=[];
+}
+function val(id){return (document.getElementById(id)?.value||'').trim()||'(belum diisi)';}
+function safeFilename(name){
+  return (name||'Mahasiswa').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_').slice(0,60)||'Mahasiswa';
+}
+function downloadReport(){
+  const name=val('studentName');
+  const checks=[...document.querySelectorAll('.task-check')];
+  const done=checks.filter(c=>c.checked).length;
+  const pct=Math.round(done/checks.length*100);
+  const lines=[];
+  lines.push('LAPORAN PRAKTIKUM');
+  lines.push('RSA DIGITAL SIGNATURE & ENCRYPTION');
+  lines.push('==================================================');
+  lines.push('IDENTITAS MAHASISWA');
+  lines.push('Nama       : '+name);
+  lines.push('NPM        : '+val('npm'));
+  lines.push('Kelompok   : '+val('group'));
+  lines.push('Kelas      : '+val('className'));
+  lines.push('Dosen      : '+val('lecturer'));
+  lines.push('Waktu      : '+val('datetime'));
+  lines.push('');
+  lines.push('PROGRES PRAKTIKUM');
+  lines.push(`Checklist selesai: ${done}/${checks.length} (${pct}%)`);
+  lines.push('Status kuis: '+(quizScore===null?'Belum diperiksa':'Sudah diperiksa'));
+  lines.push('Nilai kuis: '+(quizScore===null?'Belum tersedia':quizScore+'/100'));
+  lines.push('');
+  lines.push('HASIL PENGUJIAN');
+  lines.push('Verifikasi pesan asli                 : '+val('signOriginal'));
+  lines.push('Verifikasi pesan dimodifikasi         : '+val('signModified'));
+  lines.push('Decrypt dengan private key pasangan  : '+val('decryptCorrect'));
+  lines.push('Decrypt dengan private key berbeda   : '+val('decryptWrong'));
+  lines.push('');
+  lines.push('CATATAN HASIL PENGAMATAN');
+  lines.push(val('observation'));
+  lines.push('');
+  lines.push('ANALISIS');
+  lines.push('1. Mengapa verification gagal setelah pesan diubah?');
+  lines.push(val('analysisAnswer'));
+  lines.push('');
+  lines.push('2. Perbedaan RSA Sign/Verify dan RSA Encrypt/Decrypt?');
+  lines.push(val('differenceAnswer'));
+  lines.push('');
+  lines.push('3. Apakah signature valid otomatis membuktikan identitas orang?');
+  lines.push(val('identityAnswer'));
+  lines.push('');
+  lines.push('CHECKLIST KEGIATAN');
+  checks.forEach((c,i)=>{
+    const label=c.parentElement.innerText.trim().replace(/\s+/g,' ');
+    lines.push(`${i+1}. [${c.checked?'x':' '}] ${label}`);
+  });
+  lines.push('');
+  lines.push('RINCIAN KUIS');
+  if(quizScore===null){lines.push('Kuis belum diperiksa.');}
+  else{
+    lines.push('Nilai: '+quizScore+'/100');
+    quizDetails.forEach(d=>lines.push(`Soal ${d.number}: pilihan ${d.selected}; kunci ${d.correct}; ${d.status}. ${d.explain}`));
+  }
+  lines.push('');
+  lines.push('CATATAN');
+  lines.push('Laporan ini dihasilkan dari modul praktikum interaktif. Pastikan hasil dan analisis sesuai dengan eksperimen yang benar-benar dilakukan.');
+  lines.push('==================================================');
+  const blob=new Blob([lines.join('\r\n')],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='Laporan_Praktikum_RSA_'+safeFilename(name)+'.txt';
+  document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);
+}
+function resetAll(){
+  if(!confirm('Reset seluruh identitas, checklist, hasil pengamatan, dan jawaban kuis?')) return;
+  document.querySelectorAll('input:not([type=button]):not([type=submit]),textarea').forEach(el=>{
+    if(el.type==='checkbox'||el.type==='radio') el.checked=false;
+    else if(el.id!=='datetime') el.value='';
+  });
+  ['signOriginal','signModified','decryptCorrect','decryptWrong'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  resetQuiz();updateClock();updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
