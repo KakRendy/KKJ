@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keamanan Komputer dan Jaringan — Pertemuan 6</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--ink:#172338;--muted:#64748b;--line:#dce4ef;--accent:#2457c5;--accent2:#eaf0ff;--soft:#f8fafc;--green:#147d55;--amber:#946200;--shadow:0 8px 28px rgba(20,40,80,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.68 Inter,Segoe UI,Arial,sans-serif}
+header{background:linear-gradient(125deg,#14294b,#2457a6);color:#fff;padding:38px 22px 34px}
+.hero{max-width:1200px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:700;color:#c6d8ff}
+h1{font-size:clamp(27px,4vw,42px);line-height:1.15;margin:10px 0 12px}.subtitle{font-size:17px;color:#e1eaff;max-width:850px}
+.meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.pill{border:1px solid #ffffff55;border-radius:30px;padding:5px 11px;font-size:12px;color:#f1f5ff}
+.layout{max-width:1400px;margin:24px auto;padding:0 18px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}
+nav{position:sticky;top:14px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);max-height:calc(100vh - 28px);overflow:auto}
+nav strong{display:block;margin:0 0 9px;font-size:14px}nav a{display:block;text-decoration:none;color:#40516b;padding:7px 9px;border-radius:8px;font-size:13px;margin:2px 0}nav a:hover,nav a.active{background:var(--accent2);color:var(--accent);font-weight:650}
+.progress-wrap{margin:14px 0 8px}.progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.progress{height:6px;background:#e7edf6;border-radius:9px;overflow:hidden;margin-top:6px}.progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+main{min-width:0}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,30px);margin-bottom:18px;box-shadow:var(--shadow);scroll-margin-top:18px}
+h2{font-size:24px;line-height:1.25;margin:0 0 14px;color:#19345e}h3{font-size:18px;margin:24px 0 8px;color:#233d65}h4{font-size:15px;margin:17px 0 5px;color:#314766}
+p{margin:8px 0 12px}ul,ol{padding-left:23px;margin:7px 0 13px}li{padding:2px 0}a{color:#1e55b7}strong{color:#203653}
+.lead{font-size:16px;color:#43536a}.callout{border-left:4px solid var(--accent);background:#f1f5ff;padding:13px 16px;border-radius:0 10px 10px 0;margin:14px 0}.note{background:#fff8e8;border:1px solid #f1dfb2;padding:12px 14px;border-radius:10px;margin:14px 0}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.mini{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--soft)}.mini h4{margin:0 0 5px}.tag{display:inline-block;border-radius:20px;padding:2px 9px;background:#eaf0ff;color:#2457a6;font-size:11px;font-weight:700}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}th{background:#eef3fb;color:#233d65}
+details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:#fff}summary{cursor:pointer;padding:11px 14px;font-weight:650;color:#29466f}details .inside{padding:0 15px 14px}
+.diagram{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0}.node{background:#edf3ff;border:1px solid #cbd9f5;border-radius:10px;padding:10px 13px;text-align:center;font-weight:650;color:#24477f}.arrow{color:#7185a5;font-size:20px}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}.flow .mini{text-align:center}
+.ref-list li{margin-bottom:9px;overflow-wrap:anywhere}.ref-list a{font-weight:600}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.btn{border:1px solid #ffffff70;background:#ffffff18;color:#fff;padding:8px 12px;border-radius:9px;cursor:pointer;font-weight:600}.btn:hover{background:#ffffff2b}
+main .btn{color:var(--accent);background:#fff;border-color:var(--line)}main .btn:hover{background:var(--accent2)}
+.searchbox{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin:8px 0 12px;font:inherit}
+.hidden{display:none!important}.footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav{position:relative;top:auto;max-height:none}.grid2,.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.grid2,.flow{grid-template-columns:1fr}.card{padding:17px}table{display:block;overflow-x:auto}}
+@media print{body{background:#fff;font-size:11pt}.layout{display:block;max-width:none;margin:0;padding:0}nav,.toolbar,.progress-wrap,.searchbox{display:none!important}header{background:#fff;color:#000;padding:10px 0;border-bottom:2px solid #333}.subtitle,.eyebrow{color:#333}.card{box-shadow:none;border:0;border-bottom:1px solid #bbb;break-inside:avoid;padding:12px 0;margin:0}h2{font-size:19pt}details{break-inside:avoid}details .inside{display:block}.pill{border-color:#555;color:#111}}
+</style>
+</head>
+<body>
+<header>
+ <div class="hero">
+  <div class="eyebrow">Modul Perkuliahan · 2 SKS · Pertemuan 6</div>
+  <h1>Cryptography and<br>Secure Communication</h1>
+  <div class="subtitle">Keamanan Komputer dan Jaringan — prinsip kriptografi, pengelolaan kunci, infrastruktur kepercayaan, dan perlindungan komunikasi data.</div>
+  <div class="meta"><span class="pill">Sub-CPMK 6</span><span class="pill">Confidentiality</span><span class="pill">Integrity</span><span class="pill">Authentication</span><span class="pill">Data in Transit</span></div>
+  <div class="toolbar"><button class="btn" onclick="window.print()">Cetak / Simpan PDF</button><button class="btn" onclick="expandAll(true)">Buka semua submateri</button><button class="btn" onclick="expandAll(false)">Tutup semua submateri</button></div>
+ </div>
+</header>
+<div class="layout">
+<nav aria-label="Navigasi materi">
+ <strong>Daftar Isi</strong>
+ <input id="search" class="searchbox" placeholder="Cari istilah atau materi..." oninput="filterContent(this.value)" aria-label="Cari materi">
+ <a href="#capaian">Capaian Pembelajaran</a>
+ <a href="#ruanglingkup">A. Ruang Lingkup</a>
+ <a href="#bab1">BAB I · Fundamental Concepts</a>
+ <a href="#bab2">BAB II · Algorithms & Techniques</a>
+ <a href="#bab3">BAB III · Digital Signature</a>
+ <a href="#bab4">BAB IV · Key Management</a>
+ <a href="#bab5">BAB V · PKI & Certificates</a>
+ <a href="#bab6">BAB VI · Secure Protocols</a>
+ <a href="#bab7">BAB VII · Data in Transit</a>
+ <a href="#bab8">BAB VIII · Best Practices</a>
+ <a href="#integrasi">C. Integrasi Materi</a>
+ <a href="#alokasi">D. Pembagian 2 SKS</a>
+ <a href="#referensi">E. Referensi</a>
+ <div class="progress-wrap"><div class="progress-label"><span>Progres membaca</span><span id="pct">0%</span></div><div class="progress"><span id="bar"></span></div></div>
+ <small style="color:#718096">Gunakan menu untuk berpindah bab. Submateri dapat dibuka dan ditutup.</small>
+</nav>
+<main id="content">
+<section class="card" id="capaian">
+ <h2>Capaian Pembelajaran</h2>
+ <div class="callout"><strong>Sub-CPMK 6</strong><br>Menerapkan prinsip kriptografi dan protokol komunikasi aman untuk menjaga kerahasiaan, integritas, dan autentikasi data.</div>
+ <div class="callout"><strong>Indikator Penilaian</strong><br>Mampu menerapkan konfigurasi/prosedur komunikasi aman dan memverifikasi perlindungan data dalam transit.</div>
+ <p class="lead">Setelah mempelajari materi ini, mahasiswa diharapkan memahami mekanisme kriptografi dan hubungan antarmekanisme tersebut dalam protokol komunikasi jaringan. Penekanan pembelajaran bukan hanya pada nama algoritma, melainkan pada fungsi, batasan, dan konteks penggunaannya.</p>
+</section>
+
+<section class="card" id="ruanglingkup">
+ <h2>A. Ruang Lingkup Materi</h2>
+ <p>Materi Pertemuan 6 berfokus pada dua bidang utama:</p>
+ <div class="grid2">
+  <div class="mini"><h4>1. Cryptography</h4><p>Prinsip, algoritma, mekanisme, dan pengelolaan kunci untuk melindungi informasi.</p></div>
+  <div class="mini"><h4>2. Secure Communication</h4><p>Penerapan kriptografi dalam protokol komunikasi jaringan untuk melindungi data ketika dikirimkan melalui jaringan.</p></div>
+ </div>
+ <p>Pembahasan bergerak dari konsep dasar, mekanisme algoritma, pengelolaan kunci, hingga penerapan protokol komunikasi aman. Materi membedakan enkripsi, hashing, MAC, dan digital signature karena mekanisme tersebut memiliki fungsi keamanan yang berbeda.</p>
+</section>
+
+<section class="card chapter" id="bab1">
+ <h2>BAB I. Fundamental Concepts of Cryptography</h2>
+ <p class="lead">Bab ini membangun kosakata dan model berpikir dasar agar mahasiswa dapat menjelaskan bagaimana kriptografi melindungi informasi.</p>
+ <details open><summary>1.1 Pengertian Kriptografi</summary><div class="inside">
+  <p><strong>Kriptografi</strong> adalah bidang ilmu yang mempelajari teknik untuk melindungi informasi dengan menggunakan prinsip matematika, algoritma, dan kunci. Dalam sistem modern, kriptografi digunakan untuk menjaga kerahasiaan, mendeteksi perubahan, mengautentikasi pihak atau pesan, dan mendukung nirpenyangkalan.</p>
+  <ul><li>Definisi dan ruang lingkup kriptografi.</li><li>Perkembangan singkat: cipher klasik, kriptografi komputer, hingga kriptografi kunci publik dan protokol modern.</li><li>Peran kriptografi dalam keamanan informasi dan jaringan.</li><li><strong>Cryptography</strong> merancang dan menggunakan mekanisme perlindungan; <strong>cryptanalysis</strong> menganalisis kelemahan atau mencoba memecahkan mekanisme tersebut tanpa mengetahui rahasia yang semestinya.</li></ul>
+ </div></details>
+ <details><summary>1.2 Tujuan dan Layanan Keamanan Kriptografi</summary><div class="inside">
+  <ul><li><strong>Confidentiality (kerahasiaan):</strong> informasi hanya dapat dibaca oleh pihak yang berwenang.</li><li><strong>Integrity (integritas):</strong> perubahan data dapat dideteksi atau ditolak.</li><li><strong>Authentication (autentikasi):</strong> memverifikasi identitas pihak atau keaslian sumber pesan.</li><li><strong>Non-repudiation (nirpenyangkalan):</strong> menyediakan bukti yang dapat digunakan untuk mendukung pembuktian bahwa tindakan penandatanganan dilakukan oleh pemilik kunci, dengan asumsi pengelolaan kunci dan identitas dapat dipercaya.</li></ul>
+  <div class="note">Kriptografi tidak otomatis menjamin seluruh aspek keamanan. Misalnya, enkripsi tidak mencegah penghapusan file oleh pengguna yang memiliki hak akses, dan digital signature tidak otomatis membuat isi pesan menjadi rahasia.</div>
+ </div></details>
+ <details><summary>1.3 Terminologi Dasar Kriptografi</summary><div class="inside">
+  <ul><li><strong>Plaintext:</strong> data sebelum dienkripsi atau data dalam bentuk yang dapat dibaca.</li><li><strong>Ciphertext:</strong> hasil enkripsi yang tidak dapat dipahami tanpa mekanisme dekripsi yang benar.</li><li><strong>Encryption:</strong> proses mengubah plaintext menjadi ciphertext.</li><li><strong>Decryption:</strong> proses mengembalikan ciphertext menjadi plaintext.</li><li><strong>Cryptographic key:</strong> nilai rahasia atau nilai kunci yang digunakan oleh algoritma kriptografi.</li><li><strong>Cryptographic algorithm:</strong> prosedur matematis untuk melakukan operasi kriptografi.</li><li><strong>Cryptographic protocol:</strong> aturan komunikasi yang menggabungkan beberapa mekanisme kriptografi agar pihak-pihak dapat berkomunikasi secara aman.</li></ul>
+  <div class="diagram"><span class="node">Plaintext</span><span class="arrow">→</span><span class="node">Encryption + Key</span><span class="arrow">→</span><span class="node">Ciphertext</span><span class="arrow">→</span><span class="node">Decryption + Key</span><span class="arrow">→</span><span class="node">Plaintext</span></div>
+ </div></details>
+ <details><summary>1.4 Perbedaan Mekanisme Pengolahan Data</summary><div class="inside">
+  <table><thead><tr><th>Mekanisme</th><th>Tujuan</th><th>Dapat dikembalikan?</th><th>Catatan</th></tr></thead><tbody>
+   <tr><td>Encoding / decoding</td><td>Representasi atau kompatibilitas data</td><td>Ya, tanpa secret key</td><td>Contoh: Base64; bukan enkripsi.</td></tr>
+   <tr><td>Encryption / decryption</td><td>Confidentiality</td><td>Ya, dengan kunci yang sesuai</td><td>Contoh: AES.</td></tr>
+   <tr><td>Hashing</td><td>Sidik jari digital data</td><td>Tidak dirancang untuk dibalik</td><td>Contoh: SHA-256.</td></tr>
+   <tr><td>MAC / HMAC</td><td>Integritas dan autentikasi pesan berbasis secret bersama</td><td>Verifikasi, bukan dekripsi</td><td>Pihak yang mengetahui secret dapat membuat MAC.</td></tr>
+   <tr><td>Digital signature</td><td>Integritas dan autentikasi berbasis pasangan kunci</td><td>Verifikasi dengan public key</td><td>Signing menggunakan private key.</td></tr>
+  </tbody></table>
+ </div></details>
+ <details><summary>1.5 Komponen dan Model Sistem Kriptografi</summary><div class="inside">
+  <ul><li>Pengirim dan penerima sebagai endpoint komunikasi.</li><li>Algoritma kriptografi sebagai prosedur pemrosesan.</li><li>Kunci enkripsi dan dekripsi sebagai parameter penting.</li><li>Saluran komunikasi sebagai media pengiriman.</li><li>Proses pertukaran informasi, termasuk pembentukan atau distribusi kunci.</li></ul>
+  <p>Keamanan sistem modern tidak seharusnya bergantung pada kerahasiaan algoritma. Prinsip yang umum digunakan adalah algoritma boleh diketahui publik, sedangkan kunci harus dilindungi.</p>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab2">
+ <h2>BAB II. Cryptographic Algorithms and Techniques</h2>
+ <p class="lead">Bab ini membahas kelompok algoritma dan teknik kriptografi, karakteristiknya, serta kebutuhan keamanan yang dapat dipenuhinya.</p>
+ <details open><summary>2.1 Symmetric Cryptography</summary><div class="inside">
+  <p><strong>Symmetric cryptography</strong> menggunakan satu secret key yang sama untuk proses enkripsi dan dekripsi. Pengirim dan penerima harus memiliki kunci yang sama dan menjaganya agar tidak diketahui pihak lain.</p>
+  <ul><li>Pengertian dan karakteristik symmetric encryption.</li><li>Konsep secret key dan proses encryption–decryption.</li><li><strong>Block cipher:</strong> memproses data dalam blok berukuran tetap.</li><li><strong>Stream cipher:</strong> menghasilkan aliran keystream untuk mengombinasikan data.</li><li><strong>AES (Advanced Encryption Standard):</strong> algoritma block cipher yang banyak digunakan.</li><li>AES-128, AES-192, dan AES-256 menunjukkan ukuran kunci 128, 192, dan 256 bit.</li><li>Mode operasi AES: CBC, CTR, dan GCM.</li></ul>
+  <table><tr><th>Mode</th><th>Gambaran</th><th>Catatan keamanan</th></tr><tr><td>CBC</td><td>Blok plaintext digabungkan dengan ciphertext sebelumnya sebelum dienkripsi.</td><td>Memerlukan IV yang tepat dan perlindungan integritas terpisah.</td></tr><tr><td>CTR</td><td>Block cipher menghasilkan keystream dari counter.</td><td>Nonce/counter tidak boleh digunakan ulang dengan kunci yang sama.</td></tr><tr><td>GCM</td><td>Authenticated Encryption with Associated Data (AEAD).</td><td>Memberikan confidentiality dan integrity/authentication; nonce harus unik untuk kunci yang sama.</td></tr></table>
+  <p><strong>Kelebihan:</strong> efisien untuk data berukuran besar. <strong>Keterbatasan:</strong> distribusi dan pengelolaan secret key menjadi tantangan utama.</p>
+ </div></details>
+ <details><summary>2.2 Asymmetric Cryptography</summary><div class="inside">
+  <p><strong>Asymmetric cryptography</strong> menggunakan pasangan kunci yang saling berkaitan secara matematis, yaitu public key dan private key. Public key dapat dibagikan, sedangkan private key harus dijaga pemiliknya.</p>
+  <ul><li>Pengertian dan karakteristik kriptografi kunci publik.</li><li>Public key dan private key serta hubungan pasangan kunci.</li><li>Enkripsi/dekripsi berbasis kunci publik, pada skema yang memang mendukungnya.</li><li><strong>RSA:</strong> algoritma kunci publik yang keamanan praktisnya bergantung pada kesulitan faktorisasi bilangan besar dan penggunaan skema/padding yang benar.</li><li><strong>ECC (Elliptic Curve Cryptography):</strong> keluarga teknik kriptografi berbasis kurva eliptik.</li><li><strong>Key exchange/key agreement:</strong> mekanisme untuk membentuk secret bersama, misalnya Diffie-Hellman dan ECDH.</li></ul>
+  <div class="note">Tidak semua penggunaan RSA atau ECC adalah enkripsi. Algoritma kunci publik juga digunakan untuk tanda tangan digital dan pembentukan kunci. Dalam protokol modern, pemilihan skema dan parameter harus mengikuti standar yang tepat.</div>
+  <p><strong>Kelebihan:</strong> mendukung distribusi public key dan autentikasi berbasis pasangan kunci. <strong>Keterbatasan:</strong> operasi umumnya lebih berat daripada symmetric encryption dan membutuhkan validasi identitas/kunci.</p>
+ </div></details>
+ <details><summary>2.3 Cryptographic Hash Function</summary><div class="inside">
+  <p><strong>Hash function</strong> mengubah masukan dengan panjang beragam menjadi nilai keluaran berukuran tetap yang disebut digest atau hash.</p>
+  <ul><li>Fungsi hash dan sifat one-way secara komputasional.</li><li>Fixed-length output.</li><li><strong>Avalanche effect:</strong> perubahan kecil pada input diharapkan mengubah keluaran secara signifikan.</li><li>SHA-256 dan SHA-3.</li><li><strong>Collision resistance:</strong> kesulitan menemukan dua input berbeda yang menghasilkan hash sama.</li><li>Penggunaan hash untuk verifikasi integritas data.</li></ul>
+  <p>Hash dapat dibandingkan untuk mengetahui apakah dua berkas menghasilkan digest yang sama. Namun, hash tanpa mekanisme autentikasi tidak membuktikan siapa pembuat atau pengirim data.</p>
+ </div></details>
+ <details><summary>2.4 Message Authentication Code (MAC)</summary><div class="inside">
+  <p><strong>Message Authentication Code</strong> adalah nilai autentikasi yang dihitung dari pesan dan secret key bersama. Penerima yang memiliki secret yang sama dapat menghitung ulang MAC untuk memeriksa pesan.</p>
+  <ul><li>Pengertian dan fungsi MAC.</li><li>Perbedaan hash biasa dan MAC.</li><li><strong>HMAC:</strong> konstruksi MAC berbasis hash kriptografis, misalnya HMAC-SHA-256.</li><li>Penggunaan MAC untuk memverifikasi integritas dan autentikasi pesan di antara pihak yang berbagi secret.</li></ul>
+  <div class="note">Karena kedua pihak berbagi secret yang sama, MAC tidak memberikan bukti nirpenyangkalan terhadap pihak ketiga seperti yang dapat didukung oleh digital signature.</div>
+ </div></details>
+ <details><summary>2.5 Perbandingan Algoritma Kriptografi</summary><div class="inside">
+  <table><tr><th>Mekanisme</th><th>Kunci</th><th>Fungsi utama</th><th>Contoh</th></tr><tr><td>Symmetric encryption</td><td>Secret key bersama</td><td>Confidentiality</td><td>AES-GCM</td></tr><tr><td>Asymmetric cryptography</td><td>Public/private key</td><td>Enkripsi tertentu, signature, key agreement</td><td>RSA, ECC</td></tr><tr><td>Hash</td><td>Tidak menggunakan secret key</td><td>Digest dan pemeriksaan perubahan</td><td>SHA-256, SHA-3</td></tr><tr><td>MAC/HMAC</td><td>Secret key bersama</td><td>Integrity dan message authentication</td><td>HMAC-SHA-256</td></tr><tr><td>Digital signature</td><td>Private key untuk signing; public key untuk verifikasi</td><td>Integrity dan authenticity</td><td>RSA-PSS, ECDSA, EdDSA</td></tr></table>
+  <p>Pemilihan mekanisme harus berdasarkan kebutuhan, model ancaman, standar yang berlaku, dan cara pengelolaan kunci—bukan sekadar memilih algoritma yang paling populer.</p>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab3">
+ <h2>BAB III. Digital Signature and Authentication</h2>
+ <p class="lead">Bab ini menjelaskan bagaimana tanda tangan digital digunakan untuk memverifikasi integritas pesan dan keterkaitannya dengan identitas pemilik kunci.</p>
+ <details open><summary>3.1 Konsep Digital Signature</summary><div class="inside">
+  <p><strong>Digital signature</strong> adalah mekanisme kriptografi yang memungkinkan penerima memverifikasi bahwa pesan atau dokumen ditandatangani menggunakan private key yang sesuai dengan public key verifikasi.</p>
+  <ul><li>Pengertian dan tujuan tanda tangan digital.</li><li>Fungsi digital signature dalam komunikasi elektronik.</li><li>Hubungan digital signature dengan asymmetric cryptography.</li></ul>
+ </div></details>
+ <details><summary>3.2 Mekanisme Digital Signature</summary><div class="inside">
+  <ol><li>Pengirim menyiapkan pesan atau dokumen.</li><li>Algoritma signature memproses pesan (umumnya dengan hash sesuai skema).</li><li>Proses signing menggunakan private key.</li><li>Pengirim menyertakan pesan dan signature kepada penerima.</li><li>Penerima melakukan verification menggunakan public key yang dipercaya dan memeriksa hasilnya.</li></ol>
+  <div class="diagram"><span class="node">Pesan</span><span class="arrow">→</span><span class="node">Signing + Private Key</span><span class="arrow">→</span><span class="node">Signature</span></div>
+  <div class="diagram"><span class="node">Pesan + Signature</span><span class="arrow">→</span><span class="node">Verification + Public Key</span><span class="arrow">→</span><span class="node">Valid / Tidak Valid</span></div>
+ </div></details>
+ <details><summary>3.3 Karakteristik Digital Signature</summary><div class="inside">
+  <ul><li><strong>Authenticity:</strong> mendukung verifikasi bahwa signature dibuat menggunakan private key yang cocok dengan public key verifikasi.</li><li><strong>Integrity:</strong> perubahan pada pesan setelah ditandatangani akan menyebabkan verifikasi gagal.</li><li><strong>Non-repudiation:</strong> dapat mendukung pembuktian, bergantung pada pengamanan private key, validitas identitas, proses penerbitan sertifikat, dan konteks hukum.</li><li><strong>Batasan:</strong> signature yang valid tidak membuktikan bahwa isi pesan benar atau aman; juga tidak membuat pesan menjadi rahasia.</li></ul>
+ </div></details>
+ <details><summary>3.4 Algoritma Digital Signature</summary><div class="inside">
+  <ul><li><strong>RSA-based signature:</strong> misalnya RSASSA-PSS; skema padding harus sesuai standar.</li><li><strong>ECDSA:</strong> Elliptic Curve Digital Signature Algorithm.</li><li><strong>EdDSA:</strong> Edwards-Curve Digital Signature Algorithm, termasuk Ed25519.</li></ul>
+ </div></details>
+ <details><summary>3.5 Perbedaan Digital Signature dan Encryption</summary><div class="inside">
+  <table><tr><th>Aspek</th><th>Digital Signature</th><th>Encryption</th></tr><tr><td>Tujuan utama</td><td>Integrity dan authenticity</td><td>Confidentiality</td></tr><tr><td>Kunci</td><td>Private key untuk signing; public key untuk verifikasi</td><td>Bergantung skema; symmetric memakai secret bersama, asymmetric memakai skema enkripsi kunci publik</td></tr><tr><td>Hasil</td><td>Signature yang dapat diverifikasi</td><td>Ciphertext yang dapat didekripsi oleh pihak berwenang</td></tr><tr><td>Penggunaan</td><td>Dokumen, software, transaksi, sertifikat</td><td>File, pesan, komunikasi jaringan</td></tr></table>
+  <p>Enkripsi dan tanda tangan digital dapat digunakan bersama: pesan ditandatangani untuk integritas/autentikasi dan dienkripsi untuk kerahasiaan.</p>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab4">
+ <h2>BAB IV. Cryptographic Key Management</h2>
+ <p class="lead">Keamanan algoritma sangat bergantung pada keamanan kunci. Bab ini membahas pengelolaan kunci sepanjang siklus hidupnya.</p>
+ <details open><summary>4.1 Konsep Cryptographic Key Management</summary><div class="inside">
+  <p><strong>Key management</strong> mencakup proses mengelola kunci kriptografi sejak dibuat sampai dihancurkan. Pengelolaan yang buruk dapat membuat algoritma yang kuat menjadi tidak aman.</p>
+  <ul><li>Pengertian dan tujuan manajemen kunci.</li><li>Peran kunci dalam sistem kriptografi.</li><li>Key lifecycle: generation, distribution, storage, use, rotation, revocation, backup, dan destruction.</li></ul>
+ </div></details>
+ <details><summary>4.2 Key Generation</summary><div class="inside">
+  <ul><li>Pembentukan kunci menggunakan cryptographically secure random number generator.</li><li><strong>Randomness:</strong> ketidakpastian yang diperlukan agar kunci sulit ditebak.</li><li><strong>Entropy:</strong> ukuran ketidakpastian atau kualitas sumber acak.</li><li>Panjang kunci dan kekuatan keamanan harus mengikuti algoritma serta rekomendasi standar.</li><li>Hindari kunci tetap, pola mudah ditebak, atau penggunaan ulang yang tidak sesuai.</li></ul>
+ </div></details>
+ <details><summary>4.3 Key Distribution and Exchange</summary><div class="inside">
+  <ul><li>Distribusi secret key secara aman.</li><li>Pertukaran public key dan kebutuhan verifikasi keasliannya.</li><li><strong>Diffie-Hellman Key Exchange:</strong> memungkinkan dua pihak membentuk shared secret melalui saluran yang dapat diamati.</li><li><strong>ECDH:</strong> key agreement berbasis kurva eliptik.</li><li><strong>ECDHE:</strong> ephemeral ECDH; penggunaan parameter sementara dapat mendukung forward secrecy jika diterapkan dengan benar.</li></ul>
+  <div class="note">Key exchange tidak dengan sendirinya mengautentikasi lawan komunikasi. Tanpa autentikasi, pertukaran kunci dapat rentan terhadap Man-in-the-Middle.</div>
+ </div></details>
+ <details><summary>4.4 Key Storage and Protection</summary><div class="inside">
+  <ul><li>Penyimpanan private key dan secret key dengan kontrol akses yang ketat.</li><li>Password protection dan key encryption.</li><li><strong>Hardware Security Module (HSM):</strong> perangkat khusus untuk menghasilkan, menyimpan, dan menggunakan kunci secara terlindungi.</li><li>Pencatatan penggunaan dan pembatasan akses kunci.</li><li>Risiko pencurian, kebocoran, penyalinan, dan penyalahgunaan kunci.</li></ul>
+ </div></details>
+ <details><summary>4.5 Key Rotation, Revocation, and Destruction</summary><div class="inside">
+  <ul><li><strong>Key rotation:</strong> mengganti kunci secara terencana atau setelah kondisi tertentu.</li><li><strong>Revocation:</strong> menyatakan kunci/sertifikat tidak lagi dipercaya atau tidak boleh digunakan.</li><li><strong>Destruction:</strong> menghapus kunci secara aman ketika masa penggunaannya berakhir.</li><li>Penanganan kunci yang diduga atau telah dikompromikan, termasuk penghentian penggunaan dan penerbitan kunci pengganti.</li></ul>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab5">
+ <h2>BAB V. Public Key Infrastructure and Digital Certificates</h2>
+ <p class="lead">PKI menyediakan kerangka untuk mengikat identitas dengan public key melalui sertifikat dan rantai kepercayaan.</p>
+ <details open><summary>5.1 Konsep Public Key Infrastructure (PKI)</summary><div class="inside">
+  <p><strong>Public Key Infrastructure (PKI)</strong> adalah kumpulan kebijakan, peran, prosedur, perangkat lunak, dan komponen kriptografi untuk mengelola sertifikat digital serta hubungan antara identitas dan public key.</p>
+  <ul><li>Pengertian dan fungsi PKI.</li><li>Peran PKI dalam komunikasi digital.</li><li>Hubungan identitas digital dan public key.</li></ul>
+ </div></details>
+ <details><summary>5.2 Komponen PKI</summary><div class="inside">
+  <ul><li><strong>Certificate Authority (CA):</strong> pihak yang menerbitkan dan menandatangani sertifikat.</li><li><strong>Registration Authority (RA):</strong> membantu proses verifikasi identitas atau permohonan sertifikat sesuai kebijakan CA.</li><li><strong>Digital Certificate:</strong> dokumen digital yang mengikat identitas dengan public key.</li><li><strong>Certificate Repository:</strong> tempat penyimpanan atau distribusi informasi sertifikat.</li><li><strong>Certificate Revocation List (CRL):</strong> daftar sertifikat yang dicabut sebelum masa berlakunya berakhir.</li></ul>
+  <div class="diagram"><span class="node">Pemohon</span><span class="arrow">→</span><span class="node">RA / Verifikasi</span><span class="arrow">→</span><span class="node">CA</span><span class="arrow">→</span><span class="node">Sertifikat</span></div>
+ </div></details>
+ <details><summary>5.3 X.509 Digital Certificate</summary><div class="inside">
+  <p>Sertifikat X.509 memuat informasi yang mengikat identitas pemilik sertifikat dengan public key, serta ditandatangani oleh penerbitnya.</p>
+  <ul><li><strong>Subject:</strong> identitas pemilik sertifikat.</li><li><strong>Issuer:</strong> penerbit sertifikat.</li><li><strong>Subject Alternative Name (SAN):</strong> nama domain atau identitas alternatif yang dicakup sertifikat.</li><li><strong>Subject Public Key Info:</strong> informasi algoritma dan public key.</li><li><strong>Validity Period:</strong> waktu mulai dan berakhirnya masa berlaku.</li><li><strong>Certificate Signature:</strong> tanda tangan digital penerbit atas sertifikat.</li></ul>
+ </div></details>
+ <details><summary>5.4 Certificate Validation</summary><div class="inside">
+  <ul><li>Memeriksa apakah identitas domain sesuai dengan SAN.</li><li>Memeriksa masa berlaku sertifikat.</li><li>Memvalidasi tanda tangan penerbit dan rantai sertifikat.</li><li><strong>Certificate Chain of Trust:</strong> jalur kepercayaan dari sertifikat server melalui intermediate CA menuju root CA yang dipercaya.</li><li>Memeriksa status pencabutan melalui CRL atau OCSP sesuai dukungan sistem.</li><li><strong>OCSP (Online Certificate Status Protocol):</strong> protokol untuk memperoleh informasi status sertifikat.</li></ul>
+  <div class="note">Ikon gembok atau koneksi HTTPS bukan jaminan bahwa bisnis atau isi website dapat dipercaya. Browser memverifikasi aspek teknis sertifikat dan koneksi, bukan kebenaran semua konten website.</div>
+ </div></details>
+ <details><summary>5.5 Peran PKI dalam Autentikasi</summary><div class="inside">
+  <ul><li>Identifikasi server saat koneksi dibuat.</li><li>Verifikasi identitas digital melalui sertifikat.</li><li>Kepercayaan terhadap CA dan trust store.</li><li>Mengurangi risiko penyamaran identitas server, sepanjang validasi sertifikat dilakukan dengan benar.</li></ul>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab6">
+ <h2>BAB VI. Secure Communication Protocols</h2>
+ <p class="lead">Bab ini menjelaskan protokol yang menerapkan mekanisme kriptografi untuk membangun saluran komunikasi aman.</p>
+ <details open><summary>6.1 Konsep Secure Communication</summary><div class="inside">
+  <p><strong>Secure communication</strong> adalah komunikasi antara dua atau lebih pihak dengan mekanisme yang dirancang untuk melindungi data dari pengungkapan, perubahan, atau penyamaran pihak.</p>
+  <ul><li>Pengertian, tujuan, dan karakteristik komunikasi aman.</li><li>Perlindungan informasi selama transmisi.</li><li>Hubungan antara algoritma kriptografi, sertifikat, manajemen kunci, dan protokol jaringan.</li></ul>
+ </div></details>
+ <details><summary>6.2 HTTP dan HTTPS</summary><div class="inside">
+  <ul><li><strong>HTTP:</strong> protokol aplikasi untuk pertukaran pesan web; tanpa TLS, isi komunikasi tidak memperoleh perlindungan enkripsi dari protokol tersebut.</li><li><strong>HTTPS:</strong> HTTP yang dijalankan melalui koneksi TLS.</li><li>Perbedaan HTTP dan HTTPS dalam kerahasiaan, integritas, dan autentikasi server.</li><li>Peran TLS dalam melindungi komunikasi web.</li></ul>
+  <table><tr><th>Aspek</th><th>HTTP tanpa TLS</th><th>HTTPS dengan TLS</th></tr><tr><td>Kerahasiaan isi</td><td>Tidak disediakan oleh HTTP</td><td>Data aplikasi dilindungi enkripsi TLS</td></tr><tr><td>Integritas saat transit</td><td>Tidak disediakan oleh HTTP</td><td>Dilindungi mekanisme autentikasi/integritas TLS</td></tr><tr><td>Autentikasi server</td><td>Tidak disediakan oleh HTTP</td><td>Umumnya melalui sertifikat server</td></tr></table>
+ </div></details>
+ <details><summary>6.3 SSL dan Transport Layer Security (TLS)</summary><div class="inside">
+  <ul><li>Perkembangan SSL dan TLS.</li><li>SSL merupakan pendahulu TLS dan sudah tidak layak digunakan untuk konfigurasi modern.</li><li>TLS 1.2 dan TLS 1.3 sebagai versi yang perlu dipahami dalam konteks implementasi.</li><li>Fungsi TLS: autentikasi endpoint (server selalu dalam model umum; autentikasi klien bersifat opsional), negosiasi parameter, pembentukan kunci, dan perlindungan record.</li><li>Komponen handshake protocol dan record protocol.</li></ul>
+  <div class="note">Istilah “SSL certificate” masih sering digunakan secara informal untuk menyebut sertifikat TLS. Secara teknis, sertifikat X.509 digunakan dalam ekosistem TLS; SSL sebagai protokol lama tidak boleh diaktifkan.</div>
+ </div></details>
+ <details><summary>6.4 TLS Handshake Protocol</summary><div class="inside">
+  <p>TLS handshake membangun parameter keamanan sebelum data aplikasi dilindungi. Gambaran ringkas alur TLS 1.3:</p>
+  <ol><li><strong>ClientHello:</strong> klien mengirim versi yang didukung, cipher suite, ekstensi, dan biasanya key share.</li><li><strong>ServerHello:</strong> server memilih parameter dan mengirim key share yang diperlukan.</li><li><strong>Negotiation of Cryptographic Parameters:</strong> kedua pihak menyepakati parameter kriptografi.</li><li><strong>Server Certificate:</strong> server mengirim sertifikat jika autentikasi berbasis sertifikat digunakan.</li><li><strong>Certificate Verification:</strong> klien memeriksa rantai sertifikat dan identitas server.</li><li><strong>Key Exchange:</strong> kedua pihak memperoleh material kunci bersama melalui mekanisme yang dinegosiasikan.</li><li><strong>Finished:</strong> pesan Finished mengautentikasi transcript handshake dan mengonfirmasi kepemilikan kunci handshake.</li><li><strong>Session/Traffic Keys:</strong> kunci trafik diturunkan untuk melindungi komunikasi berikutnya.</li></ol>
+  <div class="note">Dalam TLS 1.3, urutan dan visibilitas pesan berbeda dari TLS 1.2. Setelah ServerHello, sebagian besar pesan handshake dilindungi enkripsi. Karena itu, jangan mengajarkan satu urutan generik seolah berlaku identik untuk semua versi TLS.</div>
+ </div></details>
+ <details><summary>6.5 TLS Record Protocol</summary><div class="inside">
+  <ul><li>Data dibagi menjadi unit records agar dapat diproses dan dikirimkan.</li><li>Record dilindungi menggunakan traffic keys yang dihasilkan selama handshake.</li><li>Authenticated Encryption with Associated Data (AEAD) melindungi confidentiality dan integrity/authentication record.</li><li>Penerima memverifikasi dan mendekripsi record sebelum meneruskan data ke lapisan aplikasi.</li></ul>
+ </div></details>
+ <details><summary>6.6 Secure Shell (SSH)</summary><div class="inside">
+  <ul><li>Pengertian dan fungsi SSH untuk remote access yang aman.</li><li>Peran SSH client dan SSH server.</li><li>Password-based authentication.</li><li>Public key authentication.</li><li>Host authentication melalui host key dan mekanisme verifikasi.</li><li>Enkripsi dan integritas komunikasi remote administration.</li></ul>
+  <p>SSH digunakan, misalnya, untuk mengelola server dari jarak jauh melalui terminal. Pengguna tetap harus memverifikasi host key agar tidak menerima server palsu.</p>
+ </div></details>
+ <details><summary>6.7 Virtual Private Network (VPN)</summary><div class="inside">
+  <ul><li>Pengertian dan fungsi VPN.</li><li>Tunneling dan encryption untuk melindungi lalu lintas jaringan.</li><li><strong>IPsec:</strong> kumpulan protokol untuk perlindungan komunikasi pada lapisan IP.</li><li><strong>Remote access VPN:</strong> menghubungkan perangkat pengguna ke jaringan organisasi.</li><li><strong>Site-to-site VPN:</strong> menghubungkan dua atau lebih jaringan melalui jaringan perantara.</li><li>Perbedaan VPN dan TLS: VPN umumnya melindungi lalu lintas pada tingkat jaringan/tunnel, sedangkan TLS melindungi koneksi aplikasi atau transport yang menggunakan TLS.</li></ul>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab7">
+ <h2>BAB VII. Data in Transit Security and Network Protection</h2>
+ <p class="lead">Bab ini menghubungkan konsep kriptografi dengan ancaman nyata pada data yang sedang berpindah melalui jaringan.</p>
+ <details open><summary>7.1 Konsep Data in Transit</summary><div class="inside">
+  <ul><li><strong>Data in transit:</strong> data yang sedang dikirim melalui jaringan atau saluran komunikasi.</li><li><strong>Data at rest:</strong> data yang tersimpan pada media penyimpanan.</li><li><strong>Data in use:</strong> data yang sedang diproses oleh sistem.</li><li>Alur perpindahan data antara client, server, gateway, dan layanan jaringan.</li><li>Risiko pengungkapan, perubahan, atau penyamaran selama transmisi.</li></ul>
+  <div class="grid2"><div class="mini"><h4>Data at rest</h4><p>Contoh: dokumen tersimpan di hard disk.</p></div><div class="mini"><h4>Data in use</h4><p>Contoh: data sedang diproses aplikasi.</p></div><div class="mini"><h4>Data in transit</h4><p>Contoh: kredensial dikirim melalui koneksi web.</p></div></div>
+ </div></details>
+ <details><summary>7.2 Ancaman terhadap Komunikasi Data</summary><div class="inside">
+  <ul><li><strong>Eavesdropping:</strong> penyadapan atau pengamatan komunikasi tanpa izin.</li><li><strong>Packet sniffing:</strong> menangkap paket jaringan; dapat digunakan secara sah untuk troubleshooting atau secara tidak sah untuk pengintaian.</li><li><strong>Man-in-the-Middle (MITM):</strong> penyerang berada di antara dua pihak dan mencoba mengamati atau memanipulasi komunikasi.</li><li><strong>Data tampering:</strong> perubahan data selama transmisi.</li><li><strong>Replay attack:</strong> penggunaan ulang pesan atau bukti autentikasi yang sebelumnya ditangkap.</li><li><strong>Session hijacking:</strong> pengambilalihan sesi komunikasi atau token sesi.</li><li><strong>Downgrade attack:</strong> upaya memaksa penggunaan versi atau parameter keamanan yang lebih lemah.</li></ul>
+ </div></details>
+ <details><summary>7.3 Mekanisme Perlindungan Data dalam Transit</summary><div class="inside">
+  <ul><li><strong>Encryption in transit:</strong> melindungi isi data dari pembacaan pihak yang tidak berwenang.</li><li><strong>Message integrity verification:</strong> mendeteksi perubahan pesan.</li><li><strong>Server authentication:</strong> memastikan klien berkomunikasi dengan server yang identitasnya dapat diverifikasi.</li><li><strong>Mutual authentication:</strong> kedua endpoint saling mengautentikasi jika skenario membutuhkannya.</li><li><strong>Secure key exchange:</strong> membentuk material kunci dengan perlindungan yang sesuai.</li><li><strong>Certificate validation:</strong> memeriksa identitas dan rantai kepercayaan sertifikat.</li></ul>
+ </div></details>
+ <details><summary>7.4 Perlindungan Komunikasi Menggunakan TLS</summary><div class="inside">
+  <ol><li>Klien memulai koneksi dan mengirim parameter yang didukung.</li><li>Server memilih parameter dan membuktikan identitasnya sesuai mekanisme autentikasi.</li><li>Kedua endpoint membentuk material kunci bersama.</li><li>Kunci trafik digunakan untuk melindungi data aplikasi.</li><li>Record yang diterima diverifikasi dan didekripsi oleh endpoint.</li></ol>
+  <p>HTTPS menggunakan TLS untuk melindungi komunikasi HTTP. TLS tidak menyembunyikan seluruh metadata jaringan; alamat IP, ukuran dan waktu trafik, serta sebagian informasi koneksi dapat tetap terlihat oleh pengamat jaringan.</p>
+ </div></details>
+ <details><summary>7.5 Evaluasi Keamanan Komunikasi</summary><div class="inside">
+  <ul><li>Mengidentifikasi protokol yang digunakan.</li><li>Memeriksa versi TLS yang dinegosiasikan.</li><li>Memeriksa cipher suite dan parameter kriptografi.</li><li>Memeriksa sertifikat digital dan masa berlakunya.</li><li>Mengidentifikasi informasi yang terlihat pada packet capture.</li><li>Membedakan metadata yang masih terlihat dari payload aplikasi yang dilindungi enkripsi.</li><li>Mengevaluasi apakah kerahasiaan, integritas, dan autentikasi diterapkan dengan tepat.</li></ul>
+ </div></details>
+</section>
+
+<section class="card chapter" id="bab8">
+ <h2>BAB VIII. Cryptographic Security Implementation and Best Practices</h2>
+ <p class="lead">Bab ini merangkum cara memilih dan menerapkan mekanisme kriptografi secara tepat dalam sistem informasi.</p>
+ <details open><summary>8.1 Pemilihan Mekanisme Kriptografi</summary><div class="inside">
+  <ul><li>Memilih algoritma berdasarkan kebutuhan, model ancaman, standar, dan konteks sistem.</li><li><strong>Confidentiality:</strong> menggunakan encryption, misalnya AES dengan mode AEAD yang dikonfigurasi benar.</li><li><strong>Integrity:</strong> menggunakan hash untuk pemeriksaan digest, atau MAC/AEAD untuk autentikasi integritas pesan.</li><li><strong>Authenticity:</strong> menggunakan MAC, digital signature, atau certificate-based authentication sesuai model kepercayaan.</li><li>Menilai kebutuhan performa, kompatibilitas, pengelolaan kunci, dan risiko implementasi.</li></ul>
+ </div></details>
+ <details><summary>8.2 Cryptographic Best Practices</summary><div class="inside">
+  <ul><li>Menggunakan algoritma dan parameter yang masih direkomendasikan standar.</li><li>Menggunakan panjang kunci yang sesuai.</li><li>Melindungi private key dan secret key dengan kontrol akses.</li><li>Menggunakan secure random number generator.</li><li>Menghindari algoritma, protokol, dan konfigurasi yang sudah lemah.</li><li>Menerapkan key rotation dan prosedur pencabutan kunci.</li><li>Menerapkan <strong>cryptographic agility</strong>, yaitu kemampuan sistem mengganti algoritma atau parameter kriptografi ketika standar atau kebutuhan keamanan berubah.</li></ul>
+ </div></details>
+ <details><summary>8.3 Kesalahan Umum dalam Penerapan Kriptografi</summary><div class="inside">
+  <ul><li>Menggunakan algoritma atau protokol yang sudah tidak aman.</li><li>Menggunakan password langsung sebagai kunci tanpa key derivation function yang tepat.</li><li>Menyimpan private key tanpa perlindungan memadai.</li><li>Menggunakan mode enkripsi atau nonce/IV secara keliru.</li><li>Mengabaikan validasi sertifikat.</li><li>Mengirim data sensitif melalui HTTP tanpa perlindungan tambahan.</li><li>Menganggap encoding atau hashing biasa sama dengan enkripsi.</li></ul>
+ </div></details>
+ <details><summary>8.4 Penerapan Kriptografi dalam Sistem Informasi</summary><div class="inside">
+  <ul><li><strong>Transaksi perbankan digital:</strong> TLS, sertifikat server, dan mekanisme autentikasi transaksi.</li><li><strong>E-commerce dan pembayaran elektronik:</strong> perlindungan koneksi, integritas transaksi, dan pengelolaan kredensial.</li><li><strong>Komunikasi email:</strong> TLS untuk transport serta S/MIME atau OpenPGP untuk perlindungan pesan end-to-end sesuai penerapan.</li><li><strong>Remote server administration:</strong> SSH dan autentikasi host/user.</li><li><strong>Aplikasi berbasis web:</strong> HTTPS/TLS, session protection, dan pengelolaan secret.</li><li><strong>Pertukaran data antarserver dan API:</strong> TLS, token atau sertifikat klien, dan verifikasi integritas sesuai kebutuhan.</li></ul>
+ </div></details>
+</section>
+
+<section class="card" id="integrasi">
+ <h2>C. Struktur Pendukung dan Integrasi Materi</h2>
+ <h3>1. Hubungan antara algoritma dan tujuan keamanan</h3>
+ <table><tr><th>Mekanisme</th><th>Fungsi utama</th><th>Tujuan keamanan</th></tr>
+  <tr><td>AES</td><td>Enkripsi dan dekripsi</td><td>Confidentiality</td></tr>
+  <tr><td>RSA / ECC</td><td>Kriptografi kunci publik</td><td>Confidentiality, key establishment, atau signature sesuai algoritma/skema</td></tr>
+  <tr><td>SHA-256</td><td>Menghasilkan hash</td><td>Integrity verification sebagai digest pembanding</td></tr>
+  <tr><td>HMAC</td><td>Autentikasi pesan dengan shared secret</td><td>Integrity dan authenticity di antara pemegang secret</td></tr>
+  <tr><td>Digital Signature</td><td>Signing dan verification</td><td>Integrity, authenticity, dan dukungan non-repudiation</td></tr>
+  <tr><td>Digital Certificate</td><td>Menghubungkan identitas dengan public key</td><td>Authentication dan trust</td></tr>
+ </table>
+ <div class="note"><strong>Penekanan konsep:</strong> hashing biasa tidak membuktikan siapa pengirim pesan. Untuk autentikasi pesan dibutuhkan mekanisme seperti HMAC atau digital signature. Sertifikat digital membantu mengikat identitas dengan public key, tetapi tetap perlu validasi rantai kepercayaan dan identitas.</div>
+ <h3>2. Hubungan antara kriptografi dan protokol komunikasi</h3>
+ <p>Protokol komunikasi aman menggabungkan beberapa mekanisme kriptografi. Pada HTTPS, sertifikat digital digunakan untuk membantu autentikasi server; key exchange membentuk material kunci bersama; kemudian symmetric authenticated encryption melindungi data komunikasi.</p>
+ <div class="flow">
+  <div class="mini"><h4>Cryptography Fundamentals</h4><p>Konsep, tujuan, terminologi</p></div>
+  <div class="mini"><h4>Cryptographic Algorithms</h4><p>AES · RSA · ECC · SHA-256 · HMAC</p></div>
+  <div class="mini"><h4>Signature & Key Management</h4><p>Signing · Verification · Key Exchange</p></div>
+  <div class="mini"><h4>PKI & Digital Certificate</h4><p>CA · X.509 · Trust Chain</p></div>
+  <div class="mini"><h4>Secure Communication</h4><p>HTTPS · TLS · SSH · VPN</p></div>
+  <div class="mini"><h4>Data in Transit Protection</h4><p>Confidentiality · Integrity · Authentication</p></div>
+ </div>
+ <h3>3. Contoh integrasi: HTTPS dengan TLS</h3>
+ <div class="diagram"><span class="node">Client</span><span class="arrow">⇄</span><span class="node">TLS Handshake</span><span class="arrow">⇄</span><span class="node">Server</span></div>
+ <ol><li>Client dan server menegosiasikan parameter protokol.</li><li>Server membuktikan identitasnya menggunakan sertifikat dan bukti kriptografi yang sesuai.</li><li>Client memvalidasi sertifikat dan identitas server.</li><li>Key exchange menghasilkan material kunci bersama.</li><li>Traffic keys melindungi data aplikasi menggunakan AEAD.</li></ol>
+ <p>Dalam TLS 1.3, handshake dan record protocol memiliki peran berbeda. Handshake mengautentikasi pihak, menegosiasikan parameter, dan membentuk kunci; record protocol melindungi data setelah kunci tersedia.</p>
+</section>
+
+<section class="card" id="alokasi">
+ <h2>D. Pembagian Materi untuk Perkuliahan 2 SKS</h2>
+ <p>Delapan bab merupakan kerangka akademis lengkap. Untuk satu pertemuan 2 SKS, kedalaman pembahasan perlu diprioritaskan agar konsep inti dapat dipahami tanpa membebani mahasiswa dengan detail implementasi lanjutan.</p>
+ <table><tr><th>Materi</th><th>Status</th><th>Prioritas</th></tr>
+  <tr><td>BAB I — Fundamental Concepts</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB II — Cryptographic Algorithms</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB III — Digital Signature</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB IV — Key Management</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB V — PKI & Digital Certificate</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB VI — Secure Communication Protocols</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB VII — Data in Transit Security</td><td>Materi utama</td><td><span class="tag">Wajib</span></td></tr>
+  <tr><td>BAB VIII — Best Practices</td><td>Materi utama dan pengayaan</td><td><span class="tag">Konsep inti wajib</span></td></tr>
+ </table>
+ <p>Materi lanjutan seperti HSM, VPN IPsec secara mendalam, cryptographic agility, serta perkembangan post-quantum cryptography dapat dijadikan bahan bacaan tambahan.</p>
+</section>
+
+<section class="card" id="referensi">
+ <h2>E. Referensi Akademik dan Standar Teknis</h2>
+ <p>Referensi berikut merupakan dokumen standar dan spesifikasi teknis primer. Gunakan sebagai sumber utama ketika memperdalam algoritma, manajemen kunci, sertifikat, dan protokol komunikasi.</p>
+ <h3>1. Standar NIST</h3>
+ <ol class="ref-list">
+  <li><strong>NIST FIPS 197 (updated 2023).</strong> <em>Advanced Encryption Standard (AES).</em><br><a href="https://csrc.nist.gov/pubs/fips/197/final" target="_blank" rel="noopener">Dokumen resmi NIST</a> — AES dan symmetric encryption.</li>
+  <li><strong>NIST FIPS 180-4.</strong> <em>Secure Hash Standard (SHS).</em><br><a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final" target="_blank" rel="noopener">Dokumen resmi NIST</a> — SHA-256 dan fungsi hash.</li>
+  <li><strong>NIST FIPS 186-5 (2023).</strong> <em>Digital Signature Standard (DSS).</em><br><a href="https://csrc.nist.gov/pubs/fips/186-5/final" target="_blank" rel="noopener">Dokumen resmi NIST</a> — digital signature.</li>
+  <li><strong>NIST SP 800-57 Part 1 Revision 5 (2020).</strong> <em>Recommendation for Key Management: Part 1 – General.</em><br><a href="https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final" target="_blank" rel="noopener">Dokumen resmi NIST</a> — cryptographic key management.</li>
+  <li><strong>NIST SP 800-52 Revision 2 (2019).</strong> <em>Guidelines for the Selection, Configuration, and Use of TLS Implementations.</em><br><a href="https://csrc.nist.gov/pubs/sp/800/52/r2/final" target="_blank" rel="noopener">Dokumen resmi NIST</a> — konfigurasi dan penggunaan TLS.</li>
+ </ol>
+ <h3>2. Standar IETF dan RFC</h3>
+ <ol class="ref-list">
+  <li><strong>RFC 9846 (July 2026).</strong> Rescorla, E. <em>The Transport Layer Security (TLS) Protocol Version 1.3.</em><br><a href="https://www.rfc-editor.org/info/rfc9846/" target="_blank" rel="noopener">RFC Editor — RFC 9846</a> — spesifikasi TLS 1.3 yang memperbarui dan menggantikan RFC 8446.</li>
+  <li><strong>RFC 5280 (2008).</strong> Cooper, D., et al. <em>Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile.</em><br><a href="https://www.rfc-editor.org/rfc/rfc5280.html" target="_blank" rel="noopener">RFC Editor — RFC 5280</a> — PKI, sertifikat X.509, dan CRL.</li>
+  <li><strong>RFC 4251 (2006).</strong> Ylonen, T., &amp; Lonvick, C. <em>The Secure Shell (SSH) Protocol Architecture.</em><br><a href="https://www.rfc-editor.org/rfc/rfc4251.html" target="_blank" rel="noopener">RFC Editor — RFC 4251</a> — arsitektur protokol SSH.</li>
+  <li><strong>RFC 9525 (2023).</strong> Saint-Andre, P., &amp; Salz, R. <em>Service Identity in TLS.</em><br><a href="https://www.rfc-editor.org/rfc/rfc9525.html" target="_blank" rel="noopener">RFC Editor — RFC 9525</a> — verifikasi identitas layanan pada TLS.</li>
+  <li><strong>RFC 5116 (2008).</strong> McGrew, D. <em>An Interface and Algorithms for Authenticated Encryption.</em><br><a href="https://www.rfc-editor.org/rfc/rfc5116.html" target="_blank" rel="noopener">RFC Editor — RFC 5116</a> — authenticated encryption dan AEAD.</li>
+ </ol>
+ <div class="note"><strong>Catatan pembaruan standar TLS:</strong> Per Juli 2026, RFC 9846 merupakan pembaruan TLS 1.3 yang menggantikan RFC 8446. Untuk materi yang mengikuti standar terbaru, gunakan RFC 9846 sebagai rujukan TLS 1.3. RFC 8446 tetap berguna untuk memahami spesifikasi TLS 1.3 sebelumnya dan sejarah perkembangannya.</div>
+</section>
+<div class="footer">Modul pembelajaran · Keamanan Komputer dan Jaringan · Pertemuan 6<br>Materi disusun untuk pembelajaran akademik. Selalu rujuk dokumen standar resmi untuk konfigurasi produksi.</div>
+</main>
+</div>
+<script>
+function expandAll(open){document.querySelectorAll('details').forEach(d=>d.open=open)}
+function filterContent(q){
+ q=q.trim().toLowerCase();
+ document.querySelectorAll('main .card').forEach(card=>{
+  if(!q){card.classList.remove('hidden');card.querySelectorAll('details').forEach(d=>d.classList.remove('hidden'));return}
+  let matched=card.innerText.toLowerCase().includes(q);
+  card.classList.toggle('hidden',!matched);
+  card.querySelectorAll('details').forEach(d=>d.classList.toggle('hidden',!d.innerText.toLowerCase().includes(q)));
+  if(matched) card.classList.remove('hidden');
+ });
+}
+const sections=[...document.querySelectorAll('main .card')];
+const bar=document.getElementById('bar'),pct=document.getElementById('pct');
+function updateProgress(){
+ const total=document.documentElement.scrollHeight-innerHeight;
+ const n=total>0?Math.min(100,Math.round(scrollY/total*100)):100;
+ bar.style.width=n+'%';pct.textContent=n+'%';
+}
+addEventListener('scroll',updateProgress);addEventListener('resize',updateProgress);updateProgress();
+const links=[...document.querySelectorAll('nav a')];
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{
+ if(e.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}
+}),{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
